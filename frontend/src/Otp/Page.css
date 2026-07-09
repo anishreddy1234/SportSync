@@ -124,7 +124,9 @@
 
 /* Individual OTP Box */
 .otp-box {
-  width: 50px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 50px;
   height: 60px;
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -275,7 +277,7 @@
   }
 
   .otp-box {
-    width: 44px;
+    max-width: 44px;
     height: 52px;
     font-size: 20px;
     border-radius: 8px;

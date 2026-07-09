@@ -32,6 +32,14 @@ const GroundCard = ({ ground }) => {
       <div className="ground-details">
         <h3 className="ground-name">{ground.name}</h3>
 
+        {Array.isArray(ground.sportTypes) && ground.sportTypes.length > 0 && (
+          <div className="sport-tags">
+            {ground.sportTypes.map((sport) => (
+              <span key={sport} className="sport-tag">{sport}</span>
+            ))}
+          </div>
+        )}
+
         <div className="ground-info">
           {/* Location */}
           <div className="info-item">
@@ -77,31 +85,20 @@ const GroundCard = ({ ground }) => {
           </div>
         </div>
 
-        {/* Price Section */}
+        {/* Price + Primary CTA */}
         <div className="ground-footer">
           <div className="price-section">
-            <span className="price">Rs. {ground.basePrice}</span>
+            <span className="price">₹{ground.basePrice}</span>
             <span className="price-label">per session</span>
           </div>
+          <button className="signup-cta-btn" onClick={() => navigate('/signup')}>
+            Sign Up to Book
+          </button>
         </div>
 
-        {/* Admin Login Button */}
+        {/* Admin Login Link */}
         <button className="admin-btn-full" onClick={handleAdminLogin}>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"
-            />
-          </svg>
-          Admin Login
+          Own this ground? Admin Login
         </button>
       </div>
     </div>

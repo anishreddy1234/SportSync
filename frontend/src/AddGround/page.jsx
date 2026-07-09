@@ -14,10 +14,10 @@ const AddGround = () => {
 
   // Validate phone number format
   const validatePhoneNumber = (number) => {
-    // Pakistani phone number format: +92 or 03xx (10-11 digits)
+    // Indian phone number format: +91 or 0 prefix, 10 digits starting 6-9
     const cleanNumber = number.replace(/\s+/g, '');
-    const pkPhoneRegex = /^(\+92|92|0)?3[0-9]{9}$/;
-    return pkPhoneRegex.test(cleanNumber);
+    const inPhoneRegex = /^(\+91|91|0)?[6-9][0-9]{9}$/;
+    return inPhoneRegex.test(cleanNumber);
   };
 
   const handleSend = () => {
@@ -30,7 +30,7 @@ const AddGround = () => {
     }
 
     if (!validatePhoneNumber(phoneNumber)) {
-      setError("Please enter a valid phone number (e.g., 03001234567)");
+      setError("Please enter a valid phone number (e.g., 9876543210)");
       return;
     }
 
@@ -57,7 +57,7 @@ const AddGround = () => {
       <div className="stars"></div>
 
       <div className="add-ground-container">
-        <h1 className="add-ground-title">Add Your Ground to Playistan</h1>
+        <h1 className="add-ground-title">Add Your Ground to SportSync</h1>
         <p className="add-ground-subtitle">
           List your sports facility and reach thousands of players. Enter your phone number and our team will contact you shortly.
         </p>
@@ -66,7 +66,7 @@ const AddGround = () => {
           <input
             id="phoneNumber"
             type="tel"
-            placeholder="03001234567"
+            placeholder="9876543210"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             onKeyPress={handleKeyPress}
@@ -90,7 +90,7 @@ const AddGround = () => {
           <div className="popup-box" onClick={(e) => e.stopPropagation()}>
             <h2>Request Submitted!</h2>
             <p>
-              Thank you for your interest! Our team will contact you within 24-48 hours to help you list your ground on Playistan.
+              Thank you for your interest! Our team will contact you within 24-48 hours to help you list your ground on SportSync.
             </p>
             <button onClick={closePopup} className="popup-close">
               Close

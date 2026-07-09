@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import Notification from "../components/Notification";
 import "./Page.css";
 
 const OtpVerification = () => {
@@ -7,6 +8,7 @@ const OtpVerification = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   const handleChange = (index, value) => {
     // Only allow numbers
@@ -92,7 +94,7 @@ const OtpVerification = () => {
       });
 
       if (response.ok) {
-        alert("Code resent successfully!");
+        setNotification({ type: 'success', text: 'Code resent successfully!' });
       } else {
         setError("Failed to resend code");
       }
@@ -107,13 +109,15 @@ const OtpVerification = () => {
     <div className="otp-page">
       <div className="stars"></div>
 
+      <Notification notification={notification} onDismiss={() => setNotification(null)} />
+
       {/* Back button */}
       <Link to="/signup" className="back-button">
         ← Back
       </Link>
 
       <div className="otp-card">
-        <div className="logo-circle">P</div>
+        <div className="logo-circle">S</div>
         
         <h1 className="otp-title">Verify Your Account</h1>
         <p className="otp-subtitle">Enter the 6-digit code sent to your email</p>

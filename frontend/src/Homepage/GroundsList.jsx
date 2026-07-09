@@ -88,7 +88,7 @@ const GroundsList = () => {
     <div className="grounds-list-container">
       {/* HEADER */}
       <header className="grounds-header">
-        <h1>Playistan</h1>
+        <h1>SportSync</h1>
         <p>Book your favorite sports ground in just a few clicks</p>
       </header>
 
@@ -106,9 +106,12 @@ const GroundsList = () => {
           }}
         >
           <option value="all">All Cities</option>
-          <option value="Islamabad">Islamabad</option>
-          <option value="Rawalpindi">Rawalpindi</option>
-          <option value="Lahore">Lahore</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Bengaluru">Bengaluru</option>
+          <option value="Hyderabad">Hyderabad</option>
+          <option value="Lucknow">Lucknow</option>
+          <option value="Prayagraj">Prayagraj</option>
         </select>
       </div>
 

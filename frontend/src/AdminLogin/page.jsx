@@ -70,8 +70,8 @@ const AdminLogin = () => {
       <div className="admin-login-container">
           
           <div className="admin-login-header">
-            <h1 className="admin-login-logo">Admin Login</h1>
-            <p className="admin-badge">Access your ground's dashboard</p>
+            <h1 className="admin-login-logo">SportSync</h1>
+            <p className="admin-badge">Admin Login — Access your ground's dashboard</p>
           </div>
 
           {error && <div className="message error">{error}</div>}

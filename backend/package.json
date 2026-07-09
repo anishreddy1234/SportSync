@@ -16,6 +16,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon src/index.js",
+    "seed": "node src/seed/seedDemoData.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {

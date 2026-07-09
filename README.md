@@ -1,20 +1,20 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Playistan-Sports%20Booking%20Platform-4ADE80?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDEuNDEtMS40MUwxMCAxNC4xN2w3LjU5LTcuNTlMMTkgOGwtOSA5eiIvPjwvc3ZnPg==" alt="Playistan"/>
+  <img src="https://img.shields.io/badge/SportSync-Sports%20Venue%20Booking-4ADE80?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMnM0LjQ4IDEwIDEwIDEwIDEwLTQuNDggMTAtMTBTMTcuNTIgMiAxMiAyem0tMiAxNWwtNS01IDEuNDEtMS40MUwxMCAxNC4xN2w3LjU5LTcuNTlMMTkgOGwtOSA5eiIvPjwvc3ZnPg==" alt="SportSync"/>
 </p>
 
-<h1 align="center">🏟️ Playistan</h1>
+<h1 align="center">SportSync</h1>
 
 <p align="center">
-  <strong>Pakistan's Premier Sports Ground Booking Platform</strong>
+  <strong>A modern MERN-stack sports venue booking platform</strong>
 </p>
 
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#tech-stack">Tech Stack</a> •
+  <a href="#architecture">Architecture</a> •
   <a href="#installation">Installation</a> •
-  <a href="#api-documentation">API Docs</a> •
-  <a href="#screenshots">Screenshots</a> •
-  <a href="#contributors">Contributors</a>
+  <a href="#demo-accounts">Demo Accounts</a> •
+  <a href="#attribution">Attribution</a>
 </p>
 
 <p align="center">
@@ -27,558 +27,218 @@
 
 ---
 
-## 📖 Overview
+SportSync is a full-stack sports venue booking platform that connects players with ground owners. Users can discover venues, filter them by city, book an available time slot, and track approval, while venue admins manage incoming booking requests from their own dashboard. It's built on the MERN stack (MongoDB, Express, React, Node.js) with real-time chat over Socket.IO and media handled through Cloudinary.
 
-**Playistan** is a full-stack web application designed to revolutionize sports ground booking in Pakistan. The platform connects sports enthusiasts with ground owners, enabling seamless discovery, booking, and management of sports facilities across major Pakistani cities.
+## Features
 
-Built as an **Introduction to Software Engineering (ISE)** project, Playistan demonstrates modern web development practices with a focus on real-time communication, secure authentication, and an intuitive user experience.
+- **User Authentication** – Email/password signup and login secured with JWT access and refresh tokens.
+- **OTP Verification** – Email-based one-time password confirmation before a new account is activated.
+- **Ground Discovery** – Browse verified sports venues across multiple cities.
+- **Filtering** – Filter the grounds list by city to quickly find what's nearby.
+- **Booking Workflow** – Pick a date and time slot, upload payment proof, and submit a booking request for admin approval.
+- **Admin Dashboard** – Venue owners approve, reject, or cancel bookings from a dedicated dashboard with live status badges.
+- **Image Uploads** – Ground photos and payment screenshots are uploaded and served via Cloudinary.
+- **Reviews** – Users can rate and review grounds (up to two reviews per ground).
+- **Community Chat** – Real-time chat with text, image, and video messages, powered by Socket.IO.
+- **Responsive UI** – A consistent dark "Glass & Steel" interface across desktop and mobile.
 
-### 🎯 Problem Statement
+## Tech Stack
 
-Finding and booking sports grounds in Pakistan has traditionally been a fragmented process involving phone calls, physical visits, and uncertain availability. Playistan solves this by providing:
+**Frontend**
+- React 19 + Vite
+- React Router DOM
+- Socket.IO Client
+- Plain CSS (custom design system, no UI framework)
 
-- **Centralized Discovery**: Browse all available grounds in one place
-- **Real-time Availability**: See which time slots are booked instantly
-- **Secure Booking**: Payment verification through screenshot uploads
-- **Community Building**: Connect with fellow sports enthusiasts via real-time chat
+**Backend**
+- Node.js + Express 5
+- Multer for multipart/form-data uploads
 
----
+**Database**
+- MongoDB with Mongoose ODM
 
-## ✨ Features
+**Authentication**
+- JWT access + refresh tokens (HTTP-only cookies)
+- bcrypt password hashing
+- Email-based OTP verification (Nodemailer)
 
-### 👤 For Users
+**Cloudinary**
+- Stores ground photos, payment screenshots, and chat images/videos
 
-| Feature | Description |
-|---------|-------------|
-| **🔐 Secure Authentication** | Email-based OTP verification with JWT tokens |
-| **🏟️ Ground Discovery** | Browse and filter grounds by city (Islamabad, Rawalpindi, Lahore, Karachi) |
-| **📅 Smart Booking** | Select dates and view real-time slot availability |
-| **💳 Payment Verification** | Upload payment screenshots for admin approval |
-| **⭐ Review System** | Rate and review grounds (up to 2 reviews per ground) |
-| **💬 Community Chat** | Real-time messaging with text, images, and video support |
-| **👤 User Profile** | View and manage your bookings and account details |
+**Socket.IO**
+- Powers the real-time community chat (typing indicators, online users, live message delivery)
 
-### 👨‍💼 For Ground Admins
+## Architecture
 
-| Feature | Description |
-|---------|-------------|
-| **📊 Dashboard** | Glass & Steel UI with pending and confirmed booking cards |
-| **✅ Booking Management** | Approve or reject bookings with payment screenshot verification |
-| **❌ Cancellation** | Cancel confirmed bookings when necessary |
-| **🖼️ Screenshot Preview** | View payment proof in modal overlay |
+SportSync follows a standard MERN architecture with a clear separation between client and server:
 
-### 🎁 Guest Access
+- The **React (Vite) frontend** renders all pages and talks to the backend exclusively over a versioned REST API (`/api/v1/...`), sending the JWT access token via an HTTP-only cookie on every request.
+- The **Express backend** exposes REST routes grouped by domain (users, grounds, bookings, admin, reviews, chat), each backed by a Mongoose model against **MongoDB**.
+- **Authentication** is stateless on the client (JWT-based); the backend verifies the access token per request and silently refreshes it using the refresh token when it expires.
+- **File uploads** (ground photos, payment screenshots, chat media) are received via Multer, then forwarded to **Cloudinary** for permanent storage — only the resulting URL is persisted in MongoDB.
+- **Real-time chat** runs on a separate **Socket.IO** connection alongside the REST API, so messaging doesn't depend on HTTP polling.
 
-| Feature | Description |
-|---------|-------------|
-| **👀 Browse Grounds** | View all available grounds without registration |
-| **📝 Add Ground Request** | Submit phone number to list your own ground |
+## Screenshots
 
----
+### Login
 
-## 🛠️ Tech Stack
+### Guest Home
 
-### Frontend
+### User Home
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.1.1 | UI Library |
-| **Vite** | 7.1.12 | Build Tool & Dev Server |
-| **React Router DOM** | 7.9.4 | Client-side Routing |
-| **Socket.IO Client** | 4.8.1 | Real-time Communication |
-| **CSS3** | - | Styling with CSS Variables |
+### Booking
 
-### Backend
+### Admin Dashboard
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **Node.js** | - | Runtime Environment |
-| **Express.js** | 5.1.0 | Web Framework |
-| **MongoDB** | - | Database |
-| **Mongoose** | 8.19.1 | ODM for MongoDB |
-| **Socket.IO** | 4.8.1 | WebSocket Server |
-| **JWT** | 9.0.2 | Authentication Tokens |
-| **bcrypt** | 6.0.0 | Password Hashing |
-| **Cloudinary** | 2.7.0 | Image/Video Storage |
-| **Nodemailer** | 7.0.10 | Email Service (OTP) |
-| **Multer** | 2.0.2 | File Upload Handling |
+### Chat
 
----
+## Installation
 
-## 📁 Project Structure
+### Prerequisites
+
+- Node.js (v18 or higher)
+- MongoDB (local instance or Atlas)
+- A Cloudinary account (for image/video uploads)
+- A Gmail account (for sending OTP emails)
+
+### 1. Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd SportSync
+```
+
+### 2. Backend setup
+
+```bash
+cd backend
+npm install
+```
+
+Create a `.env` file in `backend/` — see [Environment Variables](#environment-variables) for the full list.
+
+```bash
+npm run dev
+```
+
+### 3. Frontend setup
+
+```bash
+cd frontend
+npm install
+```
+
+Create a `.env` file in `frontend/` — see [Environment Variables](#environment-variables).
+
+```bash
+npm run dev
+```
+
+### 4. (Optional) Seed demo data
+
+From the `backend/` directory:
+
+```bash
+node src/seed/seedDemoData.js
+```
+
+This populates the database with demo grounds and admin accounts — see [Demo Accounts](#demo-accounts).
+
+### 5. Access the app
+
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8000`
+
+## Environment Variables
+
+Never commit real secrets — the values below are placeholders to fill in yourself.
+
+### Backend (`backend/.env`)
+
+| Variable | Description |
+|---|---|
+| `PORT` | Port the Express server listens on (e.g. `8000`) |
+| `NODE_ENV` | `development` or `production` |
+| `MONGODB_URL` | MongoDB connection string (local or Atlas) |
+| `CORS_ORIGIN` | Allowed origin for the frontend (e.g. `http://localhost:5173`) |
+| `ACCESS_TOKEN_SECRET` | Secret used to sign JWT access tokens |
+| `ACCESS_TOKEN_EXPIRY` | Access token lifetime (e.g. `15m`) |
+| `REFRESH_TOKEN_SECRET` | Secret used to sign JWT refresh tokens |
+| `REFRESH_TOKEN_EXPIRY` | Refresh token lifetime (e.g. `7d`) |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUDINARY_API_KEY` | Cloudinary API key |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret |
+| `EMAIL_USER` | Gmail address used to send OTP emails |
+| `EMAIL_PASS` | Gmail App Password (not your regular password) |
+
+### Frontend (`frontend/.env`)
+
+| Variable | Description |
+|---|---|
+| `VITE_BACKEND_URL` | Base URL of the backend API (e.g. `http://localhost:8000`) |
+
+## Demo Accounts
+
+### User
+
+No demo end-user account is pre-seeded. Create one yourself through the app's **Sign Up** flow (registration requires email OTP verification).
+
+### Admin Accounts
+
+Running the seed script (see [Installation](#installation)) creates six demo ground-admin accounts, one per venue:
+
+| Username | Ground | City |
+|---|---|---|
+| `rohan_verma` | Elite Football Arena | Delhi |
+| `karthik_reddy` | Ace Badminton Club | Bengaluru |
+| `aditya_singh` | Victory Cricket Ground | Lucknow |
+| `rahul_deshmukh` | Urban Turf | Mumbai |
+| `sandeep_rao` | Prime Tennis Court | Hyderabad |
+| `vikram_tiwari` | Champions Sports Hub | Prayagraj |
+
+**Password for all admin accounts:** `Demo@1234`
+
+## Project Structure
 
 ```
-Playistan-ISE/
-├── 📂 backend/
-│   ├── 📂 src/
-│   │   ├── 📂 controllers/          # Business logic
-│   │   │   ├── AdminDashboard.controllers.js
-│   │   │   ├── booking.controllers.js
-│   │   │   ├── chat.controllers.js
-│   │   │   ├── ground.controllers.js
-│   │   │   ├── review.controllers.js
-│   │   │   └── user.controllers.js
-│   │   ├── 📂 db/                   # Database connection
-│   │   │   └── index.js
-│   │   ├── 📂 middlewares/          # Express middlewares
-│   │   │   ├── AdminAuth.middleware.js
-│   │   │   ├── auth.middleware.js
-│   │   │   ├── error.middleware.js
-│   │   │   └── multer.middleware.js
-│   │   ├── 📂 models/               # Mongoose schemas
-│   │   │   ├── Admin.models.js
-│   │   │   ├── booking.models.js
-│   │   │   ├── ground.models.js
-│   │   │   ├── message.models.js
-│   │   │   ├── review.models.js
-│   │   │   └── user.models.js
-│   │   ├── 📂 routes/               # API routes
-│   │   │   ├── admin.router.js
-│   │   │   ├── booking.router.js
-│   │   │   ├── chat.router.js
-│   │   │   ├── ground.router.js
-│   │   │   ├── review.router.js
-│   │   │   └── user.router.js
-│   │   ├── 📂 sockets/              # Socket.IO handlers
-│   │   │   └── chat.socket.js
-│   │   ├── 📂 utils/                # Utility functions
-│   │   │   ├── ApiError.js
-│   │   │   ├── ApiResponse.js
-│   │   │   ├── asyncHandler.js
-│   │   │   ├── cloudinary.js
-│   │   │   └── otpService.js
-│   │   ├── app.js                   # Express app configuration
-│   │   ├── constants.js             # App constants
-│   │   └── index.js                 # Server entry point
-│   ├── 📂 public/temp/              # Temporary file uploads
-│   └── package.json
+SportSync/
+├── backend/
+│   └── src/
+│       ├── controllers/   # Request handlers / business logic
+│       ├── models/        # Mongoose schemas
+│       ├── routes/        # Express route definitions
+│       ├── middlewares/    # Auth, error handling, file uploads
+│       ├── sockets/        # Socket.IO chat handlers
+│       ├── seed/           # Demo data seed script
+│       ├── utils/          # Shared helpers (Cloudinary, API response, OTP, etc.)
+│       ├── db/              # Database connection
+│       └── app.js / index.js
 │
-├── 📂 frontend/
-│   ├── 📂 src/
-│   │   ├── 📂 AddGround/            # Add ground request page
-│   │   ├── 📂 AdminLogin/           # Admin authentication
-│   │   ├── 📂 AdminPage/            # Admin dashboard
-│   │   ├── 📂 ChangePass/           # Password change page
-│   │   ├── 📂 Chat/                 # Real-time community chat
-│   │   ├── 📂 components/           # Reusable components
-│   │   │   ├── LanguageToggle.jsx
-│   │   │   └── ThemeToggle.jsx
-│   │   ├── 📂 contexts/             # React Context providers
-│   │   │   ├── LanguageContext.jsx
-│   │   │   └── ThemeContext.jsx
-│   │   ├── 📂 GroundBooking/        # Booking page with reviews
-│   │   ├── 📂 GuestHome/            # Guest landing page
-│   │   ├── 📂 Homepage/             # Authenticated user home
-│   │   ├── 📂 Otp/                  # OTP verification
-│   │   ├── 📂 SignUp/               # User registration
-│   │   ├── 📂 UserProfile/          # User profile page
-│   │   ├── index.css                # Global styles & themes
-│   │   ├── Login.jsx                # Login page
-│   │   ├── Login.css
-│   │   └── main.jsx                 # App entry point & routing
-│   ├── index.html
-│   ├── vite.config.js
-│   └── package.json
+├── frontend/
+│   └── src/
+│       ├── Login.jsx, SignUp/, Otp/, ChangePass/   # Auth flow
+│       ├── GuestHome/, Homepage/                    # Ground discovery (guest / logged-in)
+│       ├── GroundBooking/                           # Booking + reviews
+│       ├── AdminLogin/, AdminPage/                  # Admin auth + dashboard
+│       ├── AddGround/                               # Guest "list your ground" request
+│       ├── Chat/                                    # Community chat
+│       ├── components/                              # Shared components (layout, background)
+│       └── main.jsx                                 # Routing entry point
 │
 └── README.md
 ```
 
----
+## Future Improvements
 
-## 🗄️ Database Schema
+- A dedicated "My Bookings" view so users can track pending/confirmed status without revisiting a ground's booking page.
+- Online payment gateway integration to replace the manual payment-screenshot workflow.
+- Sorting and richer filtering (price, rating, sport type) on the grounds list.
+- Email or push notifications when a booking is approved or rejected.
+- Automated test coverage (unit and integration tests).
+- Pagination for large ground and booking lists.
 
-### User Model
-```javascript
-{
-  username: String,        // Unique, indexed
-  email: String,           // Unique
-  password: String,        // bcrypt hashed (12 rounds)
-  isVerified: Boolean,     // Email verification status
-  otp: String,             // Temporary OTP
-  otpExpires: Date,        // OTP expiration (10 minutes)
-  refreshToken: String,    // JWT refresh token
-  timestamps: true
-}
-```
+## Attribution
 
-### Ground Model
-```javascript
-{
-  name: String,
-  owner: ObjectId (Admin),
-  description: String,
-  city: String,            // Islamabad, Rawalpindi, Lahore, Karachi
-  coverImage: { url, publicId },
-  sportTypes: [String],    // Football, Cricket, etc.
-  location: String,
-  basePrice: Number,       // PKR per hour
-  availableHours: {
-    start: String,         // "09:00"
-    end: String,           // "22:00"
-    slotDuration: Number   // Minutes (default: 60)
-  },
-  photos: [{ url, publicId }],
-  rules: String,
-  timestamps: true
-}
-```
+SportSync is based on the open-source **[Playistan](https://github.com/IfBilal/Playistan-ISE)** project, originally created by **M. Bilal Tahir** ([@IfBilal](https://github.com/IfBilal)) and **Taimoor Shaukat** ([@T361](https://github.com/T361)).
 
-### Booking Model
-```javascript
-{
-  groundId: ObjectId (Ground),
-  userId: ObjectId (User),
-  price: Number,
-  date: String,            // "YYYY-MM-DD"
-  startTime: String,       // "10:00"
-  endTime: String,         // "11:00"
-  status: String,          // "pending" | "confirmed"
-  screenshot: String,      // Payment proof URL
-  screenshotPublicId: String,
-  createdAt: Date
-}
-```
-
-### Review Model
-```javascript
-{
-  groundId: ObjectId (Ground),
-  userId: ObjectId (User),
-  rating: Number,          // 1-5 stars
-  comment: String,         // Max 500 characters
-  timestamps: true
-}
-```
-
-### Message Model
-```javascript
-{
-  sender: ObjectId (User),
-  messageType: String,     // "text" | "image" | "video"
-  content: String,         // For text messages
-  mediaUrl: String,        // For image/video
-  mediaPublicId: String,   // Cloudinary ID
-  isDeleted: Boolean,
-  readBy: [{ user, readAt }],
-  timestamps: true
-}
-```
-
-### Admin Model
-```javascript
-{
-  username: String,        // Unique, indexed
-  phoneNumber: String,
-  ground: ObjectId (Ground),
-  password: String,
-  refreshToken: String,
-  timestamps: true
-}
-```
-
----
-
-## 📡 API Documentation
-
-### Base URL
-```
-http://localhost:8000/api/v1
-```
-
-### Authentication Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/users/register` | Register new user | ❌ |
-| POST | `/users/verify-otp` | Verify email OTP | ❌ |
-| POST | `/users/resend-otp` | Resend OTP email | ❌ |
-| POST | `/users/login` | User login | ❌ |
-| POST | `/users/logout` | User logout | ✅ |
-| POST | `/users/change-password` | Change password | ✅ |
-
-### Ground Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/grounds` | Get all grounds | ❌ |
-| POST | `/grounds/filter-by-city` | Filter by city | ❌ |
-| GET | `/grounds/sort/asc` | Sort by price (low→high) | ❌ |
-| GET | `/grounds/sort/desc` | Sort by price (high→low) | ❌ |
-
-### Booking Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/bookings/:groundId/:date` | Get booked slots | ✅ |
-| POST | `/bookings/book` | Create booking | ✅ |
-
-### Admin Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/admin/login` | Admin login | ❌ |
-| POST | `/admin/logout` | Admin logout | ✅ Admin |
-| GET | `/admin/pending-bookings` | Get pending bookings | ✅ Admin |
-| GET | `/admin/confirmed-bookings` | Get confirmed bookings | ✅ Admin |
-| PUT | `/admin/confirm-booking` | Approve booking | ✅ Admin |
-| DELETE | `/admin/reject-booking` | Reject booking | ✅ Admin |
-| DELETE | `/admin/cancel-booking` | Cancel confirmed | ✅ Admin |
-
-### Chat Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| GET | `/chat/history` | Get chat messages | ✅ |
-| POST | `/chat/send-text` | Send text message | ✅ |
-| POST | `/chat/send-image` | Send image | ✅ |
-| POST | `/chat/send-video` | Send video | ✅ |
-| DELETE | `/chat/message/:messageId` | Delete message | ✅ |
-| GET | `/chat/online-users` | Get online users | ✅ |
-
-### Review Endpoints
-
-| Method | Endpoint | Description | Auth |
-|--------|----------|-------------|------|
-| POST | `/reviews/add` | Add review | ✅ |
-| GET | `/reviews/:groundId` | Get ground reviews | ❌ |
-| GET | `/reviews/user-count/:groundId` | Get user's review count | ✅ |
-
----
-
-## 🔌 Socket.IO Events
-
-### Client → Server
-
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `typing:start` | - | User started typing |
-| `typing:stop` | - | User stopped typing |
-| `users:online` | - | Request online users list |
-
-### Server → Client
-
-| Event | Payload | Description |
-|-------|---------|-------------|
-| `message:new` | Message object | New message broadcast |
-| `message:deleted` | `{ messageId }` | Message deleted |
-| `user:joined` | `{ userId, username }` | User connected |
-| `user:left` | `{ userId, username }` | User disconnected |
-| `user:typing` | `{ userId, username }` | User is typing |
-| `user:stopped-typing` | `{ userId }` | User stopped typing |
-| `users:online-list` | `{ count, users }` | Online users list |
-
----
-
-## 🚀 Installation
-
-### Prerequisites
-
-- **Node.js** (v18 or higher)
-- **MongoDB** (local or Atlas)
-- **Cloudinary Account** (for image/video uploads)
-- **Gmail Account** (for OTP emails)
-
-### 1️⃣ Clone the Repository
-
-```bash
-git clone https://github.com/IfBilal/Playistan-ISE.git
-cd Playistan-ISE
-```
-
-### 2️⃣ Backend Setup
-
-```bash
-cd backend
-
-# Install dependencies
-npm install
-
-# Create environment file
-touch .env
-```
-
-Add the following to `.env`:
-
-```env
-# Server
-PORT=8000
-NODE_ENV=development
-
-# Database
-MONGODB_URL=mongodb://localhost:27017
-
-# CORS
-CORS_ORIGIN=http://localhost:5173
-
-# JWT Secrets
-ACCESS_TOKEN_SECRET=your_access_token_secret_here
-ACCESS_TOKEN_EXPIRY=15m
-REFRESH_TOKEN_SECRET=your_refresh_token_secret_here
-REFRESH_TOKEN_EXPIRY=7d
-
-# Cloudinary
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_api_key
-CLOUDINARY_API_SECRET=your_api_secret
-
-# Email (Gmail)
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_app_password
-```
-
-> **Note**: For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password.
-
-```bash
-# Start the backend server
-npm run dev
-```
-
-### 3️⃣ Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Create environment file
-touch .env
-```
-
-Add the following to `.env`:
-
-```env
-VITE_BACKEND_URL=http://localhost:8000
-```
-
-```bash
-# Start the frontend development server
-npm run dev
-```
-
-### 4️⃣ Access the Application
-
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8000
-
----
-
-## 🎨 Design System
-
-### Glass & Steel UI
-Playistan features a modern **"Glass & Steel"** design system with:
-
-| Element | Implementation |
-|---------|----------------|
-| **Glass Cards** | `backdrop-filter: blur(20px)` with subtle borders |
-| **Color Palette** | Slate backgrounds, emerald/amber accents |
-| **Typography** | Space Grotesk (headings), Inter (body) |
-| **Animations** | Smooth hover lifts, fade/slide transitions |
-| **Shadows** | Layered depth with color-tinted glows |
-
-### Color Tokens
-```css
-/* Primary Colors */
---slate-950: #020617;      /* Deep background */
---slate-900: #0f172a;      /* Card backgrounds */
---emerald-400: #34d399;    /* Success, confirmed */
---amber-400: #fbbf24;      /* Warning, pending */
---red-400: #f87171;        /* Danger, reject */
---indigo-400: #818cf8;     /* Info, actions */
-```
-
----
-
-## 🔐 Security Features
-
-| Feature | Implementation |
-|---------|----------------|
-| **Password Hashing** | bcrypt with 12 salt rounds |
-| **JWT Authentication** | Access (15m) + Refresh (7d) tokens |
-| **HTTP-Only Cookies** | Prevents XSS token theft |
-| **OTP Verification** | 6-digit code with 10-minute expiry |
-| **CORS Protection** | Configured origin whitelist |
-| **Auto Token Refresh** | Middleware-based silent refresh |
-| **Secure Cookies** | `secure: true` in production |
-
----
-
-## 🌐 Deployment
-
-### Frontend (Vercel/Netlify)
-
-```bash
-cd frontend
-npm run build
-# Deploy the 'dist' folder
-```
-
-### Backend (Railway/Render)
-
-1. Set all environment variables in your hosting platform
-2. Set the start command: `node src/index.js`
-3. Ensure MongoDB Atlas connection string is used
-
----
-
-## 📸 Screenshots
-
-### 🏠 Homepage (Dark Theme)
-> Browse and discover sports grounds with city filtering and glass-morphism cards
-
-### 📅 Ground Booking
-> Select dates, view available slots, and book with payment proof upload
-
-### 💬 Community Chat
-> Real-time messaging with image/video support and online user indicators
-
-### 👨‍💼 Admin Dashboard
-> Glass & Steel UI with pending/confirmed booking cards, payment screenshot verification
-
-### 🔐 Admin Login
-> Centered glass card with gradient login button and venue branding
-
----
-
-## 🤝 Contributors
-
-<table>
-  <tr>
-    <td align="center">
-      <a href="https://github.com/IfBilal">
-        <img src="https://github.com/IfBilal.png" width="100px;" alt="M. Bilal Tahir"/><br />
-        <sub><b>M. Bilal Tahir</b></sub>
-      </a><br />
-      <sub>🚀 Lead Developer</sub>
-    </td>
-    <td align="center">
-      <a href="https://github.com/T361">
-        <img src="https://github.com/T361.png" width="100px;" alt="Taimoor Shaukat"/><br />
-        <sub><b>Taimoor Shaukat</b></sub>
-      </a><br />
-      <sub>🚀 Lead Developer</sub>
-    </td>
-  </tr>
-</table>
-
----
-
----
-
-## 🙏 Acknowledgments
-
-- **FAST-NUCES** - Introduction to Software Engineering course
-- **MongoDB Atlas** - Database hosting
-- **Cloudinary** - Media storage
-- **Socket.IO** - Real-time communication
-
----
-
-<p align="center">
-  <strong>Made with ❤️ in Pakistan 🇵🇰</strong>
-</p>
-
-<p align="center">
-  <a href="https://github.com/IfBilal/Playistan-ISE/issues">Report Bug</a> •
-  <a href="https://github.com/IfBilal/Playistan-ISE/issues">Request Feature</a>
-</p>
+It has been significantly modified and localized — a full rebrand, a UI/UX consistency pass, an Indian-market localization of cities, ground names, pricing, and demo data, and an admin-workflow overhaul — and is maintained here as an independent portfolio project. This project does not claim authorship of the original Playistan codebase; credit for that original work belongs to its original creators.

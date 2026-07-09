@@ -27,6 +27,14 @@ const GroundCard = ({ ground }) => {
       <div className="ground-details">
         <h3 className="ground-name">{ground.name}</h3>
 
+        {Array.isArray(ground.sportTypes) && ground.sportTypes.length > 0 && (
+          <div className="sport-tags">
+            {ground.sportTypes.map((sport) => (
+              <span key={sport} className="sport-tag">{sport}</span>
+            ))}
+          </div>
+        )}
+
         <div className="ground-info">
           <div className="info-item">
             <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -50,7 +58,7 @@ const GroundCard = ({ ground }) => {
         {/* Footer */}
         <div className="ground-footer">
           <div className="price-section">
-            <span className="price">Rs. {ground.basePrice}</span>
+            <span className="price">₹{ground.basePrice}</span>
             <span className="price-label">per session</span>
           </div>
 

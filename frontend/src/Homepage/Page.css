@@ -64,16 +64,16 @@
 
 .homepage-logo {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: 0.08em;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
   margin: 0;
-  text-shadow: 
+  text-shadow:
     0 0 20px rgba(255, 255, 255, 0.35),
-    0 0 40px rgba(255, 255, 255, 0.1),
-    0 1px 3px rgba(0, 0, 0, 0.8);
+    0 0 40px rgba(255, 255, 255, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.8);
 }
 
 .header-nav {
@@ -216,7 +216,7 @@
 
 /* Hero Section */
 .hero-section {
-  padding: 140px 40px 60px;
+  padding: 96px 40px 24px;
   text-align: center;
   position: relative;
 }
@@ -227,13 +227,13 @@
 }
 
 .hero-title {
-  font-size: 4rem;
+  font-size: 2rem;
   font-weight: 800;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
-  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 8px;
 }
 
 .hero-subtitle {
@@ -242,7 +242,7 @@
   color: #737373;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  margin: 0 0 48px;
+  margin: 0 0 20px;
 }
 
 /* Filter Bar */
@@ -290,7 +290,7 @@
 
 /* Grounds Section */
 .grounds-section {
-  padding: 40px 40px 80px;
+  padding: 24px 40px 80px;
 }
 
 .grounds-container {
@@ -307,7 +307,19 @@
 /* No Results */
 .no-results {
   text-align: center;
-  padding: 80px 20px;
+  padding: 60px 20px;
+}
+
+.no-results-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .no-results h3 {
@@ -320,11 +332,32 @@
 }
 
 .no-results p {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 12px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
   color: #737373;
+  margin: 0 0 24px;
+}
+
+.reset-filters-btn {
+  height: 44px;
+  padding: 0 28px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-filters-btn:hover {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
 /* Footer */
@@ -362,11 +395,11 @@
   }
 
   .hero-section {
-    padding: 120px 20px 40px;
+    padding: 80px 20px 16px;
   }
 
   .hero-title {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
 
   .grounds-section {

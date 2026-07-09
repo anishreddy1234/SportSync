@@ -81,7 +81,7 @@ const GroundsList = () => {
     <div className="grounds-list-container">
       {/* HEADER */}
       <header className="grounds-header">
-        <h1 className="guest-logo">Playistan</h1>
+        <h1 className="guest-logo">SportSync</h1>
         <p className="guest-subtitle">Book your favorite sports ground in just a few clicks</p>
       </header>
 
@@ -108,9 +108,12 @@ const GroundsList = () => {
           onChange={(e) => handleCityFilter(e.target.value)}
         >
           <option value="all">All Cities</option>
-          <option value="Islamabad">Islamabad</option>
-          <option value="Rawalpindi">Rawalpindi</option>
-          <option value="Lahore">Lahore</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Mumbai">Mumbai</option>
+          <option value="Bengaluru">Bengaluru</option>
+          <option value="Hyderabad">Hyderabad</option>
+          <option value="Lucknow">Lucknow</option>
+          <option value="Prayagraj">Prayagraj</option>
         </select>
       </div>
 
@@ -138,7 +141,7 @@ const GroundsList = () => {
 
       {/* FOOTER */}
       <footer className="guest-footer">
-        <p>&copy; 2024 Playistan. All rights reserved.</p>
+        <p>&copy; 2026 SportSync. All rights reserved.</p>
       </footer>
     </div>
   );

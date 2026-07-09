@@ -38,12 +38,12 @@
 /* Title */
 .login-title {
   font-family: 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
   color: #ffffff;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  margin: 0 0 6px;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
   text-align: center;
   text-shadow: 
     0 0 30px rgba(255, 255, 255, 0.4),

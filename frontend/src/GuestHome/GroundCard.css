@@ -116,10 +116,30 @@
   letter-spacing: -0.01em;
   margin: 0;
   line-height: 1.2;
-  text-shadow: 
+  text-shadow:
     0 0 20px rgba(255, 255, 255, 0.3),
     0 0 40px rgba(255, 255, 255, 0.1),
     0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Sport Type Tags */
+.sport-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sport-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  color: #818cf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  border-radius: 9999px;
+  padding: 4px 10px;
 }
 
 /* Info Items */
@@ -184,6 +204,29 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
+/* Sign Up to Book CTA */
+.signup-cta-btn {
+  height: 40px;
+  padding: 0 20px;
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 9999px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.signup-cta-btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
 /* Book Now Button - Glass with Hover Invert */
 .book-now-btn {
   height: 40px;
@@ -246,54 +289,31 @@
     font-size: 16px;
   }
 
-  .book-now-btn {
+  .book-now-btn,
+  .signup-cta-btn {
     height: 36px;
-    padding: 0 20px;
+    padding: 0 16px;
     font-size: 11px;
   }
 }
 
-/* Admin Login Button - Ghost Style */
+/* Admin Login Link - De-emphasized */
 .admin-btn-full {
   width: 100%;
-  height: 42px;
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  color: rgba(255, 255, 255, 0.6);
+  background: none;
+  border: none;
+  padding: 4px 0 0;
+  color: rgba(255, 255, 255, 0.4);
   font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: color 0.2s ease;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.admin-btn-full svg {
-  width: 16px;
-  height: 16px;
-  opacity: 0.6;
-  transition: all 0.25s ease;
+  letter-spacing: 0.05em;
+  text-align: center;
 }
 
 .admin-btn-full:hover {
-  background: rgba(99, 102, 241, 0.1);
-  border-color: rgba(99, 102, 241, 0.4);
   color: #818cf8;
-  transform: translateY(-2px);
-}
-
-.admin-btn-full:hover svg {
-  opacity: 1;
-  color: #818cf8;
-}
-
-.admin-btn-full:active {
-  transform: translateY(0);
 }

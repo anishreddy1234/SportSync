@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
+import Notification from '../components/Notification';
+import ConfirmDialog from '../components/ConfirmDialog';
 import './page.css';
 
 const Chat = () => {
@@ -15,6 +17,8 @@ const Chat = () => {
   const [mediaPreview, setMediaPreview] = useState(null);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [messageType, setMessageType] = useState('text');
+  const [notification, setNotification] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState(null);
   
   const messagesEndRef = useRef(null);
   const imageInputRef = useRef(null);
@@ -25,9 +29,8 @@ const Chat = () => {
   useEffect(() => {
     // Get current user from localStorage
     const userStr = localStorage.getItem('user');
-    
+
     if (!userStr) {
-      console.log('No user in localStorage');
       // User not logged in, go back
       navigate('/');
       return;
@@ -56,19 +59,18 @@ const Chat = () => {
     });
 
     newSocket.on('connect', () => {
-      console.log('Connected to chat server');
       newSocket.emit('users:online');
     });
 
     newSocket.on('connect_error', (error) => {
       console.error('Connection error:', error.message);
       // Only redirect on definitive auth errors, not connection issues
-      if (error.message === 'Authentication token required' || 
+      if (error.message === 'Authentication token required' ||
           error.message === 'Invalid token' ||
           error.message === 'Token expired' ||
           error.message === 'User not found') {
-        alert('Session expired. Please login again.');
-        navigate('/');
+        setNotification({ type: 'error', text: 'Session expired. Please login again.' });
+        setTimeout(() => navigate('/'), 1500);
       }
       // For other errors (like network issues), don't redirect - socket will retry
     });
@@ -114,14 +116,6 @@ const Chat = () => {
       setMessages(prev => prev.filter(m => m._id !== messageId));
     });
 
-    socket.on('user:joined', ({ username, message }) => {
-      console.log(message);
-    });
-
-    socket.on('user:left', ({ username, message }) => {
-      console.log(message);
-    });
-
     socket.on('user:typing', ({ username }) => {
       setTypingUsers(prev => [...new Set([...prev, username])]);
     });
@@ -135,14 +129,12 @@ const Chat = () => {
     });
 
     socket.on('error', ({ message }) => {
-      alert(message);
+      setNotification({ type: 'error', text: message });
     });
 
     return () => {
       socket.off('message:new');
       socket.off('message:deleted');
-      socket.off('user:joined');
-      socket.off('user:left');
       socket.off('user:typing');
       socket.off('user:stopped-typing');
       socket.off('users:online-list');
@@ -204,7 +196,7 @@ const Chat = () => {
       
     } catch (error) {
       console.error('Error sending message:', error);
-      alert('Failed to send message: ' + error.message);
+      setNotification({ type: 'error', text: 'Failed to send message: ' + error.message });
     }
   };
 
@@ -237,20 +229,18 @@ const Chat = () => {
 
     // Validate file size (e.g., max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      alert('Image size must be less than 10MB');
+      setNotification({ type: 'error', text: 'Image size must be less than 10MB' });
       return;
     }
 
     // Get the message input to maintain focus
     const messageInput = document.querySelector('.message-input');
-    
+
     setUploadingMedia(true);
 
     try {
       const formData = new FormData();
       formData.append('image', file);
-
-      console.log('Uploading image:', file.name, file.size, 'bytes');
 
       // Send image directly - this uploads AND creates the message
       const response = await fetch(
@@ -267,16 +257,14 @@ const Chat = () => {
         throw new Error(errorData.message || 'Image upload failed');
       }
 
-      const data = await response.json();
-      
       // Image sent successfully - message will appear via socket.on('message:new')
-      console.log('Image message sent successfully:', data);
-      
+      await response.json();
+
       // Reset the file input and restore focus
       if (imageInputRef.current) {
         imageInputRef.current.value = '';
       }
-      
+
       // Keep focus on message input to prevent scroll
       if (messageInput) {
         setTimeout(() => {
@@ -284,10 +272,10 @@ const Chat = () => {
           messageInput.scrollIntoView({ behavior: 'instant', block: 'nearest' });
         }, 0);
       }
-      
+
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image: ' + error.message);
+      setNotification({ type: 'error', text: 'Failed to upload image: ' + error.message });
     } finally {
       setUploadingMedia(false);
     }
@@ -299,20 +287,18 @@ const Chat = () => {
 
     // Validate file size (e.g., max 50MB for videos)
     if (file.size > 50 * 1024 * 1024) {
-      alert('Video size must be less than 50MB');
+      setNotification({ type: 'error', text: 'Video size must be less than 50MB' });
       return;
     }
 
     // Get the message input to maintain focus
     const messageInput = document.querySelector('.message-input');
-    
+
     setUploadingMedia(true);
 
     try {
       const formData = new FormData();
       formData.append('video', file);
-
-      console.log('Uploading video:', file.name, file.size, 'bytes');
 
       // Send video directly - this uploads AND creates the message
       const response = await fetch(
@@ -329,16 +315,14 @@ const Chat = () => {
         throw new Error(errorData.message || 'Video upload failed');
       }
 
-      const data = await response.json();
-      
       // Video sent successfully - message will appear via socket.on('message:new')
-      console.log('Video message sent successfully:', data);
-      
+      await response.json();
+
       // Reset the file input and restore focus
       if (videoInputRef.current) {
         videoInputRef.current.value = '';
       }
-      
+
       // Keep focus on message input to prevent scroll
       if (messageInput) {
         setTimeout(() => {
@@ -346,18 +330,27 @@ const Chat = () => {
           messageInput.scrollIntoView({ behavior: 'instant', block: 'nearest' });
         }, 0);
       }
-      
+
     } catch (error) {
       console.error('Error uploading video:', error);
-      alert('Failed to upload video: ' + error.message);
+      setNotification({ type: 'error', text: 'Failed to upload video: ' + error.message });
     } finally {
       setUploadingMedia(false);
     }
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    if (!window.confirm('Delete this message?')) return;
+  const requestDeleteMessage = (messageId) => {
+    setConfirmDialog({
+      title: 'Delete message?',
+      message: 'This message will be deleted for everyone. This can\'t be undone.',
+      confirmLabel: 'Delete',
+      danger: true,
+      onConfirm: () => performDeleteMessage(messageId),
+    });
+  };
 
+  const performDeleteMessage = async (messageId) => {
+    setConfirmDialog(null);
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/message/${messageId}`,
@@ -370,7 +363,7 @@ const Chat = () => {
       if (!response.ok) throw new Error('Delete failed');
     } catch (error) {
       console.error('Error deleting message:', error);
-      alert('Failed to delete message');
+      setNotification({ type: 'error', text: 'Failed to delete message' });
     }
   };
 
@@ -398,14 +391,17 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
+      <Notification notification={notification} onDismiss={() => setNotification(null)} />
+      <ConfirmDialog dialog={confirmDialog} onCancel={() => setConfirmDialog(null)} />
+
       {/* Header */}
       <header className="chat-header">
-        <button className="back-btn" onClick={() => navigate('/homepage')}>
+        <button className="back-btn" onClick={() => navigate('/homepage')} aria-label="Go back">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        
+
         <div className="chat-header-info">
           <h1>Community</h1>
           <p className="online-count">
@@ -414,7 +410,7 @@ const Chat = () => {
           </p>
         </div>
 
-        <button className="online-users-btn" onClick={() => socket?.emit('users:online')}>
+        <button className="online-users-btn" onClick={() => socket?.emit('users:online')} aria-label="Refresh online users">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
@@ -468,7 +464,8 @@ const Chat = () => {
                 {currentUser && msg.sender?._id === currentUser._id && (
                   <button
                     className="delete-btn"
-                    onClick={() => handleDeleteMessage(msg._id)}
+                    onClick={() => requestDeleteMessage(msg._id)}
+                    aria-label="Delete message"
                   >
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -497,7 +494,7 @@ const Chat = () => {
       {/* Media Preview */}
       {mediaPreview && (
         <div className="media-preview">
-          <button className="cancel-media" onClick={cancelMediaPreview}>×</button>
+          <button className="cancel-media" onClick={cancelMediaPreview} aria-label="Cancel attachment">×</button>
           {mediaPreview.type === 'image' ? (
             <img src={mediaPreview.mediaUrl} alt="Preview" />
           ) : (
@@ -530,6 +527,7 @@ const Chat = () => {
           onClick={() => imageInputRef.current?.click()}
           disabled={uploadingMedia}
           title="Upload Image"
+          aria-label="Upload image"
         >
           {uploadingMedia ? (
             <div className="mini-spinner"></div>
@@ -548,6 +546,7 @@ const Chat = () => {
           onClick={() => videoInputRef.current?.click()}
           disabled={uploadingMedia}
           title="Upload Video"
+          aria-label="Upload video"
         >
           {uploadingMedia ? (
             <div className="mini-spinner"></div>
@@ -568,7 +567,7 @@ const Chat = () => {
           disabled={uploadingMedia}
         />
 
-        <button type="submit" className="send-btn" disabled={uploadingMedia || (!inputMessage.trim() && !mediaPreview)}>
+        <button type="submit" className="send-btn" disabled={uploadingMedia || (!inputMessage.trim() && !mediaPreview)} aria-label="Send message">
           <svg viewBox="0 0 24 24" fill="currentColor">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>

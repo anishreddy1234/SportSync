@@ -102,7 +102,7 @@
 .ground-details {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   flex: 1;
   padding: 8px;
 }
@@ -116,10 +116,30 @@
   letter-spacing: -0.01em;
   margin: 0;
   line-height: 1.2;
-  text-shadow: 
+  text-shadow:
     0 0 20px rgba(255, 255, 255, 0.3),
     0 0 40px rgba(255, 255, 255, 0.1),
     0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Sport Type Tags */
+.sport-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sport-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: #818cf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(129, 140, 248, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.35);
+  border-radius: 9999px;
+  padding: 4px 12px;
 }
 
 /* Info Items */
@@ -151,7 +171,7 @@
 /* Footer Section */
 .ground-footer {
   margin-top: auto;
-  padding-top: 16px;
+  padding-top: 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
   justify-content: space-between;
@@ -166,10 +186,10 @@
 
 .price {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: #ffffff;
-  text-shadow: 
+  text-shadow:
     0 0 15px rgba(255, 255, 255, 0.3),
     0 0 30px rgba(255, 255, 255, 0.1),
     0 1px 3px rgba(0, 0, 0, 0.8);
@@ -184,32 +204,30 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
-/* Book Now Button - Glass with Hover Invert */
+/* Book Now Button - Solid Primary CTA */
 .book-now-btn {
   height: 40px;
   padding: 0 24px;
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #ffffff;
+  color: #000000;
+  border: none;
   border-radius: 9999px;
   font-family: 'Inter', sans-serif;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 800;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .book-now-btn:hover {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
-  transform: translateY(-2px);
+  transform: scale(1.03);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
 }
 
 .book-now-btn:active {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 /* Ensure no child background glitch */

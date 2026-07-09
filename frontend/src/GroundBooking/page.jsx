@@ -6,6 +6,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
+import Notification from '../components/Notification';
 import './page.css';
 
 const BookingPage = () => {
@@ -22,6 +23,8 @@ const BookingPage = () => {
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingMessage, setBookingMessage] = useState(null);
   const [bookedSlots, setBookedSlots] = useState([]); // State to store booked times
+  const [slotResetNotice, setSlotResetNotice] = useState(false);
+  const [notification, setNotification] = useState(null);
 
   // Review states
   const [reviews, setReviews] = useState([]);
@@ -85,6 +88,11 @@ const BookingPage = () => {
     if (selectedDate && groundId) {
       fetchBookedSlots(selectedDate);
     }
+    // Let the user know (instead of silently clearing) if changing the date
+    // is about to reset a slot they had already picked.
+    if (selectedSlot) {
+      setSlotResetNotice(true);
+    }
     setSelectedSlot(''); // Clear slot selection when date changes
   }, [selectedDate, groundId]);
 
@@ -118,7 +126,6 @@ const BookingPage = () => {
       });
       const data = await res.json();
       if (res.ok && data.data) {
-        console.log('User review count from backend:', data.data.count);
         setUserReviewCount(data.data.count);
       }
     } catch (err) {
@@ -147,7 +154,7 @@ const BookingPage = () => {
     e.preventDefault();
     
     if (!reviewRating || !reviewComment.trim()) {
-      alert('Please provide both rating and comment');
+      setNotification({ type: 'error', text: 'Please provide both rating and comment' });
       return;
     }
 
@@ -167,7 +174,7 @@ const BookingPage = () => {
       const data = await res.json();
       
       if (res.ok) {
-        alert('Review submitted successfully!');
+        setNotification({ type: 'success', text: 'Review submitted successfully!' });
         setReviewRating(0);
         setReviewComment('');
         setShowReviewForm(false);
@@ -179,11 +186,11 @@ const BookingPage = () => {
           await fetchUserReviewCount(); // Update count from backend
           setShowReviewForm(false);
         }
-        alert(data.message || 'Failed to submit review');
+        setNotification({ type: 'error', text: data.message || 'Failed to submit review' });
       }
     } catch (err) {
       console.error('Error submitting review:', err);
-      alert('Error submitting review. Please try again.');
+      setNotification({ type: 'error', text: 'Error submitting review. Please try again.' });
     } finally {
       setReviewLoading(false);
     }
@@ -257,7 +264,7 @@ const BookingPage = () => {
       const data = await res.json();
 
       if(res.status === 498 || res.status === 401){
-        navigate('/login'); // Redirect to login on auth failure
+        navigate('/'); // Redirect to login on auth failure (Login is mounted at "/")
         return;
       }
 
@@ -276,14 +283,20 @@ const BookingPage = () => {
     }
   };
 
- 
+  // What the user still needs to do before Book Now becomes available
+  const missingRequirements = [];
+  if (!selectedDate) missingRequirements.push('select a date');
+  if (!selectedSlot) missingRequirements.push('choose a slot');
+  if (!paymentScreenshot) missingRequirements.push('upload a payment screenshot');
 
   return (
     <div className="booking-container">
+      <Notification notification={notification} onDismiss={() => setNotification(null)} />
+
       <div className="booking-card">
         {/* Header */}
         <div className="header">
-          <button className="back-button" onClick={() => navigate(-1)}>←</button>
+          <button className="back-button" onClick={() => navigate(-1)} aria-label="Go back">←</button>
           <h1 className="logo">{ground.name}</h1>
         </div>
 
@@ -297,7 +310,7 @@ const BookingPage = () => {
               <div className="meta-item">Owner: {ground.owner?.username || 'Unknown'}</div>
               <div className="meta-item">Contact: {ground.owner?.phoneNumber || 'N/A'}</div>
               <div className="meta-item">Location: {ground.location}</div>
-              <div className="meta-item">Price: Rs. {ground.basePrice}</div>
+              <div className="meta-item">Price: ₹{ground.basePrice}</div>
             </div>
             {ground.rules && (
               <div className="rules-section">
@@ -382,6 +395,11 @@ const BookingPage = () => {
         {/* Slot Selection */}
         <div className="slots-section">
           <h3 className="section-title">Available Slots</h3>
+          {slotResetNotice && (
+            <p className="slot-reset-hint">
+              Your slot selection was reset because you changed the date — please choose a slot again.
+            </p>
+          )}
           <div className="slots-grid">
             {availableSlots.map((slot, idx) => {
               const booked = isBooked(slot);
@@ -390,7 +408,11 @@ const BookingPage = () => {
                   key={idx}
                   // Apply 'booked' class if slot is taken
                   className={`slot-card ${selectedSlot === slot ? 'selected' : ''} ${booked ? 'booked' : ''}`}
-                  onClick={() => !booked && setSelectedSlot(slot)} // Prevent clicking if booked
+                  onClick={() => {
+                    if (booked) return; // Prevent clicking if booked
+                    setSelectedSlot(slot);
+                    setSlotResetNotice(false);
+                  }}
                 >
                   {booked ? <span className="booked-text">BOOKED</span> : slot}
                 </div>
@@ -402,6 +424,14 @@ const BookingPage = () => {
         {/* Upload Payment Screenshot */}
         <div className="upload-section">
           <h3 className="section-title">Upload Payment Screenshot</h3>
+
+          <div className="payment-note">
+            <p>
+              <strong>Demo booking flow:</strong> upload any image as your payment screenshot to continue.
+              In a production application, this step would be replaced with an online payment gateway or the venue's own payment instructions.
+            </p>
+          </div>
+
           <input
             type="file"
             accept="image/*"
@@ -431,14 +461,19 @@ const BookingPage = () => {
                {bookingMessage.text}
              </div>
           )}
-          <button 
-            className="book-button" 
+          <button
+            className="book-button"
             onClick={handleBooking}
             // Disable if loading, no date/slot selected, or no screenshot uploaded
             disabled={bookingLoading || !selectedSlot || !selectedDate || !paymentScreenshot}
           >
             {bookingLoading ? 'Processing Request...' : 'Book Now'}
           </button>
+          {!bookingLoading && missingRequirements.length > 0 && (
+            <p className="booking-requirements-hint">
+              Still need to {missingRequirements.join(', ')}.
+            </p>
+          )}
         </div>
 
         {/* Reviews Section */}
@@ -453,26 +488,23 @@ const BookingPage = () => {
             )}
           </div>
 
-          <button 
+          <button
             className="add-review-btn"
             onClick={() => {
-              console.log('Button clicked. User review count:', userReviewCount);
-              console.log('Can add review?', userReviewCount < 2);
               if (userReviewCount < 2) {
                 setShowReviewForm(!showReviewForm);
               } else {
-                alert(`You have already submitted ${userReviewCount} reviews. Maximum is 2.`);
+                setNotification({ type: 'error', text: `You have already submitted ${userReviewCount} reviews. Maximum is 2.` });
               }
             }}
             disabled={userReviewCount >= 2}
           >
-            {userReviewCount >= 2 
-              ? `Review limit reached (${userReviewCount}/2)` 
+            {userReviewCount >= 2
+              ? `Review limit reached (${userReviewCount}/2)`
               : (showReviewForm ? 'Cancel' : 'Add Review')
             }
           </button>
 
-          {console.log('Rendering: showReviewForm=', showReviewForm, 'userReviewCount=', userReviewCount, 'Should show form?', showReviewForm && userReviewCount < 2)}
           {showReviewForm && userReviewCount < 2 && (
             <form className="review-form" onSubmit={handleSubmitReview}>
               <div className="form-group">

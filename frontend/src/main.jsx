@@ -29,6 +29,9 @@ import AddGround from './AddGround/page.jsx';
 // Chat Page
 import Chat from './Chat/page.jsx';
 
+// 404 Not Found
+import NotFound from './NotFound/page.jsx';
+
 const Main = () => {
   return (
     <BrowserRouter>
@@ -60,6 +63,9 @@ const Main = () => {
 
           {/* Chat Page */}
           <Route path="/chat" element={<Chat />} />
+
+          {/* 404 - Catch-all Route */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
     </BrowserRouter>

@@ -65,7 +65,7 @@ const SignUp = () => {
       <div className="stars"></div>
 
       <div className="signup-card">
-        <h1 className="signup-title">Playistan</h1>
+        <h1 className="signup-title">SportSync</h1>
         <p className="signup-subtitle">Create Account</p>
 
         {error && <div className="error-message">{error}</div>}
