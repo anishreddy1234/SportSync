@@ -14,11 +14,12 @@
   "author": "M. Bilal Tahir",
   "type": "module",
   "main": "index.js",
-  "scripts": {
-    "dev": "NODE_ENV=development nodemon src/index.js",
-    "seed": "node src/seed/seedDemoData.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+"scripts": {
+  "dev": "NODE_ENV=development nodemon src/index.js",
+  "start": "node src/index.js",
+  "seed": "node src/seed/seedDemoData.js",
+  "test": "echo \"Error: no test specified\" && exit 1"
+},
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
