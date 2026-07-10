@@ -15,7 +15,7 @@ const GroundsList = () => {
 
   const fetchGrounds = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/grounds');
+      const response = await fetch(`${API_URL}/api/v1/grounds`);
       if (!response.ok) throw new Error('Failed to fetch grounds');
       const data = await response.json();
 
@@ -43,7 +43,7 @@ const GroundsList = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/grounds/filter-by-city', {
+      const response = await fetch(`${API_URL}/api/v1/grounds/filter-by-city`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ city }),

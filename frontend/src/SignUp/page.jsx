@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import "./Page.css";
 
 const SignUp = () => {
@@ -25,7 +26,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/v1/users/register", {
+      const response = await fetch(`${API_URL}/api/v1/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

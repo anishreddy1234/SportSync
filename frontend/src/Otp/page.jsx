@@ -48,7 +48,7 @@ const OtpVerification = () => {
     try {
       const email = localStorage.getItem("verificationEmail");
       
-      const response = await fetch("http://localhost:8000/api/v1/users/verify-otp", {
+      const response = await fetch(`${API_URL}/api/v1/users/verify-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const OtpVerification = () => {
     try {
       const email = localStorage.getItem("verificationEmail");
       
-      const response = await fetch("http://localhost:8000/api/v1/users/resend-otp", {
+      const response = await fetch(`${API_URL}/api/v1/users/resend-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
