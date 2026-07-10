@@ -11,6 +11,9 @@ const transporter = nodemailer.createTransport({
     pass: process.env.EMAIL_PASS,
   },
 });
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+console.log("NODE_ENV:", process.env.NODE_ENV);
 
 transporter.verify((error, success) => {
   if (error) {
