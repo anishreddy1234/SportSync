@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import "./page.css";
 
 const STATUS_META = {
@@ -56,7 +57,7 @@ export default function AdminPage() {
     try {
       // Fetch pending bookings
       const pendingResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/pending-bookings`,
+        `${API_URL}/api/v1/admin/pending-bookings`,
         {
           method: "GET",
           credentials: "include",
@@ -99,7 +100,7 @@ export default function AdminPage() {
       if (currentGroundId) {
         try {
           const confirmedResponse = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/confirmed-bookings`,
+            `${API_URL}/api/v1/admin/confirmed-bookings`,
             {
               method: "GET",
               credentials: "include",
@@ -126,7 +127,7 @@ export default function AdminPage() {
           console.error("Error fetching confirmed bookings:", error);
           // Don't fail the whole page if confirmed bookings fail
           setConfirmedBookings([]);
-          notify("error", "Network error loading confirmed bookings.");
+          notify("error", "Unable to load confirmed bookings. Please refresh the page.");
         }
       } else {
         setConfirmedBookings([]);
@@ -134,7 +135,7 @@ export default function AdminPage() {
 
     } catch (error) {
       console.error("Error fetching bookings:", error);
-      notify("error", "Network error. Could not load the dashboard.");
+      notify("error", "Unable to load the dashboard. Please refresh the page.");
     } finally {
       setLoading(false);
     }
@@ -144,7 +145,7 @@ export default function AdminPage() {
     setProcessing(bookingId, true);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/confirm-booking`,
+        `${API_URL}/api/v1/admin/confirm-booking`,
         {
           method: "PUT",
           headers: {
@@ -175,7 +176,7 @@ export default function AdminPage() {
       notify("success", "Booking confirmed successfully.");
     } catch (error) {
       console.error("Error confirming booking:", error);
-      notify("error", "Network error. Could not confirm booking.");
+      notify("error", "Failed to confirm booking. Please try again.");
     } finally {
       setProcessing(bookingId, false);
     }
@@ -201,7 +202,7 @@ export default function AdminPage() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/reject-booking`,
+        `${API_URL}/api/v1/admin/reject-booking`,
         {
           method: "DELETE",
           headers: {
@@ -226,14 +227,14 @@ export default function AdminPage() {
         return;
       }
 
-      notify("success", "Booking rejected.");
+      notify("success", "Booking rejected successfully.");
       // Give the "Rejected" badge a moment on screen before the card leaves the list.
       setTimeout(() => {
         setPendingBookings((prev) => prev.filter((b) => b._id !== bookingId));
       }, 700);
     } catch (error) {
       console.error("Error rejecting booking:", error);
-      notify("error", "Network error. Could not reject booking.");
+      notify("error", "Failed to reject booking. Please try again.");
       setPendingBookings((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, _actionStatus: undefined } : b))
       );
@@ -261,7 +262,7 @@ export default function AdminPage() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/cancel-booking`,
+        `${API_URL}/api/v1/admin/cancel-booking`,
         {
           method: "DELETE",
           headers: {
@@ -286,13 +287,13 @@ export default function AdminPage() {
         return;
       }
 
-      notify("success", "Booking cancelled.");
+      notify("success", "Booking cancelled successfully.");
       setTimeout(() => {
         setConfirmedBookings((prev) => prev.filter((b) => b._id !== bookingId));
       }, 700);
     } catch (error) {
       console.error("Error cancelling booking:", error);
-      notify("error", "Network error. Could not cancel booking.");
+      notify("error", "Failed to cancel booking. Please try again.");
       setConfirmedBookings((prev) =>
         prev.map((b) => (b._id === bookingId ? { ...b, _actionStatus: undefined } : b))
       );
@@ -308,7 +309,7 @@ export default function AdminPage() {
   const handleLogout = async () => {
     try {
       await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/logout`,
+        `${API_URL}/api/v1/admin/logout`,
         {
           method: "POST",
           credentials: "include",

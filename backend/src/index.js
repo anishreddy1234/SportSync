@@ -17,11 +17,9 @@ const tempDir = path.join(__dirname, "../public/temp");
 
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
-  console.log("✅ Created temp directory for uploads");
 }
 
 let port = process.env.PORT || 8001;
-console.log(process.env.CORS_ORIGIN);
 
 const httpServer = createServer(app);
 

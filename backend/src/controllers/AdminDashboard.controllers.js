@@ -47,10 +47,10 @@ let createAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Cover image is required");
   }
   if (await Admin.findOne({ username })) {
-    throw new ApiError(409, "Admin with same username already exists");
+    throw new ApiError(409, "This username is already taken. Please choose another.");
   }
   if (await Ground.findOne({ name: groundName })) {
-    throw new ApiError(409, "Ground with same name already exists");
+    throw new ApiError(409, "A ground with this name already exists. Please choose a different name.");
   }
   try {
     let admin = await Admin.create({
@@ -58,15 +58,15 @@ let createAdmin = asyncHandler(async (req, res) => {
       phoneNumber,
       password,
     });
-    if (!admin) throw new ApiError(500, "Error creating admin");
+    if (!admin) throw new ApiError(500, "We couldn't create the admin account. Please try again.");
     let uploadedCoverImage = await uploadOnCloudinary(coverImage.path);
     if (!uploadedCoverImage)
-      throw new ApiError(500, "Error uploading cover image");
+      throw new ApiError(500, "Failed to upload cover image. Please try again.");
     let uploadedPhotos = await Promise.all(
       photos.map((photo) => uploadOnCloudinary(photo.path))
     );
     if (!uploadedPhotos) {
-      throw new ApiError(500, "Error uploading photos");
+      throw new ApiError(500, "Failed to upload photos. Please try again.");
     }
     let ground = await Ground.create({
       name: groundName,
@@ -88,22 +88,19 @@ let createAdmin = asyncHandler(async (req, res) => {
       })),
     });
     if (!ground) {
-      console.log("admin deleted");
-
       await Admin.findByIdAndDelete(admin._id);
-      throw new ApiError(500, "Error creating ground");
+      throw new ApiError(500, "We couldn't create the ground listing. Please try again.");
     }
     admin.ground = ground._id;
     await admin.save();
-    res.status(201).json(new ApiResponse(201, admin, ground, "Admin created"));
+    res.status(201).json(new ApiResponse(201, { admin, ground }, "Admin account created successfully."));
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
     throw new ApiError(
       500,
-      "Something went wrong while registering Admin",
-      error
+      "We couldn't complete admin registration. Please try again."
     );
   }
 });
@@ -118,12 +115,12 @@ let loginAdmin = asyncHandler(async (req, res) => {
   try {
     admin = await Admin.findOne({ username });
     if (!admin) {
-      throw new ApiError(404, "Admin not found");
+      throw new ApiError(404, "No admin account found with this username.");
     }
     let passwordCorrect = await admin.isPasswordCorrect(password);
 
     if (!passwordCorrect) {
-      throw new ApiError(400, "Wrong password");
+      throw new ApiError(400, "Incorrect password.");
     }
     let { accessToken, refreshToken } = await generateAccessAndRefreshToken(
       admin._id
@@ -133,8 +130,6 @@ let loginAdmin = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     };
-    console.log("Access and refresh token generated");
-
     res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -143,14 +138,14 @@ let loginAdmin = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { admin, accessToken, refreshToken },
-          "Admin Loggedin Successfully"
+          "Signed in successfully."
         )
       );
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, "Something went wrong", error);
+    throw new ApiError(500, "We couldn't sign you in. Please try again.");
   }
 });
 
@@ -177,7 +172,7 @@ let refreshAccessToken = async (req, res) => {
   let refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
-    throw new ApiError(498, "Refresh token not provided");
+    throw new ApiError(498, "Your session has expired. Please sign in again.");
   }
 
   try {
@@ -186,11 +181,11 @@ let refreshAccessToken = async (req, res) => {
     let admin = await Admin.findById(decoded?.id);
 
     if (!admin) {
-      throw new ApiError(498, "Invalid refresh token");
+      throw new ApiError(498, "Your session has expired. Please sign in again.");
     }
 
     if (refreshToken !== admin?.refreshToken) {
-      throw new ApiError(498, "Wrong refresh token");
+      throw new ApiError(498, "Your session has expired. Please sign in again.");
     }
 
     let { accessToken, refreshToken: newRefreshToken } =
@@ -205,12 +200,11 @@ let refreshAccessToken = async (req, res) => {
     res
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", newRefreshToken, options);
-    console.log("Access and Refresh tokens refreshed");
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(400, "error refreshing access token");
+    throw new ApiError(400, "Your session has expired. Please sign in again.");
   }
 };
 
@@ -234,7 +228,7 @@ const pendingBookings = asyncHandler(async (req, res) => {
     "name location"
   );
   if (!admin) {
-    throw new ApiError(404, "Admin not found");
+    throw new ApiError(404, "We couldn't find your admin account.");
   }
 
   const pendingBookings = await Booking.find({
@@ -262,7 +256,7 @@ const confirmedBookings = asyncHandler(async (req, res) => {
     "name location"
   );
   if (!admin) {
-    throw new ApiError(404, "Admin not found");
+    throw new ApiError(404, "We couldn't find your admin account.");
   }
 
   const bookings = await Booking.find({
@@ -300,12 +294,12 @@ const confirmBooking = asyncHandler(async (req, res) => {
     .populate("groundId", "name location");
 
   if (!booking) {
-    throw new ApiError(404, "Booking not found");
+    throw new ApiError(404, "This booking no longer exists.");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, booking, "Booking confirmed successfully"));
+    .json(new ApiResponse(200, booking, "Booking confirmed successfully."));
 });
 
 const rejectBooking = asyncHandler(async (req, res) => {
@@ -317,11 +311,11 @@ const rejectBooking = asyncHandler(async (req, res) => {
 
   let booking = await Booking.findByIdAndDelete(bookingId, { new: true });
   if (!booking) {
-    throw new ApiError(404, "Booking not found");
+    throw new ApiError(404, "This booking no longer exists.");
   }
   return res
     .status(200)
-    .json(new ApiResponse(200, "Booking cancelled successfully"));
+    .json(new ApiResponse(200, {}, "Booking rejected successfully."));
 });
 
 const cancelBooking = asyncHandler(async (req, res) => {
@@ -333,13 +327,13 @@ const cancelBooking = asyncHandler(async (req, res) => {
 
   const booking = await Booking.findByIdAndDelete(bookingId);
   if (!booking) {
-    throw new ApiError(404, "Booking not found");
+    throw new ApiError(404, "This booking no longer exists.");
   }
 
   return res
     .status(200)
     .json(
-      new ApiResponse(200, null, "Confirmed booking cancelled successfully")
+      new ApiResponse(200, null, "Booking cancelled successfully.")
     );
 });
 

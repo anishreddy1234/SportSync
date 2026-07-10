@@ -43,14 +43,14 @@ const SignUp = () => {
       if (response.ok) {
         // Store email for OTP verification
         localStorage.setItem("verificationEmail", formData.email);
-        
+
         // Navigate to OTP verification page
         navigate("/otp");
       } else {
-        setError(data.message || "Sign up failed");
+        setError(data.message || "Unable to create your account. Please try again.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
       console.error("Sign up error:", err);
     } finally {
       setLoading(false);

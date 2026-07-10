@@ -17,7 +17,7 @@ const addReview = asyncHandler(async (req, res) => {
 
   const ground = await Ground.findById(groundId);
   if (!ground) {
-    throw new ApiError(404, "Ground not found");
+    throw new ApiError(404, "This ground no longer exists.");
   }
 
   const reviewCount = await Review.countDocuments({
@@ -26,7 +26,7 @@ const addReview = asyncHandler(async (req, res) => {
   });
 
   if (reviewCount >= 2) {
-    throw new ApiError(400, "You can only submit up to 2 reviews per ground");
+    throw new ApiError(400, "You've already submitted the maximum of 2 reviews for this ground.");
   }
 
   const review = await Review.create({
@@ -42,7 +42,7 @@ const addReview = asyncHandler(async (req, res) => {
 
   res
     .status(201)
-    .json(new ApiResponse(201, populatedReview, "Review added successfully"));
+    .json(new ApiResponse(201, populatedReview, "Review submitted successfully."));
 });
 
 const getGroundReviews = asyncHandler(async (req, res) => {

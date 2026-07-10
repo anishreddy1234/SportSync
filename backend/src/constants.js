@@ -1,1 +1,1 @@
-export const DB_NAME = "playistan";
+export const DB_NAME = "sportsync";

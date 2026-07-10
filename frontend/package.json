@@ -1,7 +1,18 @@
 {
-  "name": "my-react-app",
+  "name": "sportsync-frontend",
   "private": true,
   "version": "0.0.0",
+  "description": "React frontend for SportSync, a full-stack sports venue booking platform.",
+  "homepage": "https://github.com/anishreddy1234/SportSync#readme",
+  "bugs": {
+    "url": "https://github.com/anishreddy1234/SportSync/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anishreddy1234/SportSync.git"
+  },
+  "license": "ISC",
+  "author": "Anish Reddy",
   "type": "module",
   "scripts": {
     "dev": "vite",

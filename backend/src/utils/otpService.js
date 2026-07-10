@@ -33,11 +33,10 @@ const sendOTPEmail = async (email, otp) => {
       `,
     });
 
-    console.log(`✅ OTP sent to ${email}`);
     return true;
   } catch (error) {
     console.error("❌ Resend error:", error);
-    throw new ApiError(500, "Failed to send OTP email");
+    throw new ApiError(500, "Failed to send OTP. Please try again.");
   }
 };
 

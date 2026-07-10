@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import GroundCard from './GroundCard.jsx'; // Corrected import path
+import Notification from '../components/Notification';
+import { API_URL } from '../config';
 import "./Page.css"; // Corrected import path
 
 const WHY_SPORTSYNC = [
@@ -51,6 +53,7 @@ const GuestHome = () => {
   const [grounds, setGrounds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCity, setSelectedCity] = useState('all');
+  const [notification, setNotification] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -60,7 +63,7 @@ const GuestHome = () => {
   const fetchGrounds = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/grounds`,
+        `${API_URL}/api/v1/grounds`,
         {
           method: "GET",
         }
@@ -74,6 +77,7 @@ const GuestHome = () => {
       setGrounds(data.data || []);
     } catch (error) {
       console.error('Error fetching grounds:', error);
+      setNotification({ type: 'error', text: 'Unable to load grounds. Please refresh the page.' });
     } finally {
       setLoading(false);
     }
@@ -107,6 +111,8 @@ const GuestHome = () => {
 
   return (
     <div className="homepage-container">
+      <Notification notification={notification} onDismiss={() => setNotification(null)} />
+
       {/* Header */}
       <header className="homepage-header">
         <div className="header-content">

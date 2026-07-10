@@ -77,7 +77,7 @@ const sendImageMessage = asyncHandler(async (req, res) => {
   const uploadedFile = await uploadOnCloudinary(req.file.path);
 
   if (!uploadedFile) {
-    throw new ApiError(500, "Failed to upload image");
+    throw new ApiError(500, "Failed to upload image. Please try again.");
   }
 
   const message = await Message.create({
@@ -118,7 +118,7 @@ const sendVideoMessage = asyncHandler(async (req, res) => {
   const uploadedFile = await uploadOnCloudinary(req.file.path);
 
   if (!uploadedFile) {
-    throw new ApiError(500, "Failed to upload video");
+    throw new ApiError(500, "Failed to upload video. Please try again.");
   }
 
   const message = await Message.create({

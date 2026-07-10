@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Notification from "../components/Notification";
+import { API_URL } from "../config";
 import "./Page.css";
 
 const OtpVerification = () => {
@@ -64,14 +65,14 @@ const OtpVerification = () => {
       if (response.ok) {
         // Clear stored email
         localStorage.removeItem("verificationEmail");
-        
+
         // Navigate to login page
         navigate("/");
       } else {
-        setError(data.message || "Verification failed");
+        setError(data.message || "Verification failed. Please try again.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
       console.error("Verification error:", err);
     } finally {
       setLoading(false);
@@ -84,7 +85,7 @@ const OtpVerification = () => {
 
     try {
       const email = localStorage.getItem("verificationEmail");
-      
+
       const response = await fetch(`${API_URL}/api/v1/users/resend-otp`, {
         method: "POST",
         headers: {
@@ -93,13 +94,15 @@ const OtpVerification = () => {
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json().catch(() => ({}));
+
       if (response.ok) {
-        setNotification({ type: 'success', text: 'Code resent successfully!' });
+        setNotification({ type: 'success', text: 'OTP sent successfully.' });
       } else {
-        setError("Failed to resend code");
+        setError(data.message || "Failed to send OTP. Please try again.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
     } finally {
       setLoading(false);
     }

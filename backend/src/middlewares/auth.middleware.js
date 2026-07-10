@@ -40,13 +40,13 @@ const verifyJWT = async (req, res, next) => {
         return next();
       } catch (refreshError) {
         return next(
-          new ApiError(498, "Authentication failed, please login again")
+          new ApiError(498, "Your session has expired. Please sign in again.")
         );
       }
     }
 
     console.error("JWT verification error:", error.message);
-    next(new ApiError(500, "Authentication error"));
+    next(new ApiError(500, "Something went wrong while verifying your session. Please sign in again."));
   }
 };
 

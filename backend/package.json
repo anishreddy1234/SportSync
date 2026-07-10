@@ -1,17 +1,17 @@
 {
-  "name": "ise_project",
+  "name": "sportsync-backend",
   "version": "1.0.0",
-  "description": "Intro to SE project",
-  "homepage": "https://github.com/IfBilal/Playistan-ISE#readme",
+  "description": "Full-stack sports venue booking platform built with the MERN stack.",
+  "homepage": "https://github.com/anishreddy1234/SportSync#readme",
   "bugs": {
-    "url": "https://github.com/IfBilal/Playistan-ISE/issues"
+    "url": "https://github.com/anishreddy1234/SportSync/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IfBilal/Playistan-ISE.git"
+    "url": "git+https://github.com/anishreddy1234/SportSync.git"
   },
   "license": "ISC",
-  "author": "M. Bilal Tahir",
+  "author": "Anish Reddy",
   "type": "module",
   "main": "index.js",
   "scripts": {

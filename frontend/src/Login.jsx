@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "./config";
 import "./Login.css";
 
 const Login = () => {
@@ -25,7 +26,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/login`,
+        `${API_URL}/api/v1/users/login`,
         {
           method: "POST",
           headers: {
@@ -45,13 +46,13 @@ const Login = () => {
         // SAVE USER AND TOKEN TO LOCALSTORAGE
         localStorage.setItem("user", JSON.stringify(data.data.user));
         localStorage.setItem("accessToken", data.data.accessToken);
-        
+
         navigate("/homepage");
       } else {
-        setError(data.message || "Login failed");
+        setError(data.message || "Unable to sign in. Please try again.");
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
       console.error("Login error:", err);
     } finally {
       setLoading(false);

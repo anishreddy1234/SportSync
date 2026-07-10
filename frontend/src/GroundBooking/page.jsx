@@ -7,6 +7,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/thumbs';
 import Notification from '../components/Notification';
+import { API_URL } from '../config';
 import './page.css';
 
 const BookingPage = () => {
@@ -58,7 +59,7 @@ const BookingPage = () => {
 
     try {
       // Calls your backend route to get pending AND confirmed bookings for this ground/date
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/v1/bookings/${groundId}/${date}`;
+      const url = `${API_URL}/api/v1/bookings/${groundId}/${date}`;
       const response = await fetch(url, { credentials: 'include' });
       
       if (!response.ok && response.status !== 404) {
@@ -108,11 +109,16 @@ const BookingPage = () => {
   const fetchGround = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/grounds/${groundId}`); 
+      const res = await fetch(`${API_URL}/api/v1/grounds/${groundId}`);
       const data = await res.json();
-      if (res.ok && data.data) setGround(data.data);
+      if (res.ok && data.data) {
+        setGround(data.data);
+      } else {
+        setNotification({ type: 'error', text: 'Unable to load this ground. Please refresh the page.' });
+      }
     } catch (err) {
       console.error('Failed to fetch ground:', err);
+      setNotification({ type: 'error', text: 'Unable to load this ground. Please refresh the page.' });
     } finally {
       setLoading(false);
     }
@@ -121,7 +127,7 @@ const BookingPage = () => {
   // Fetch user's review count from backend
   const fetchUserReviewCount = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/reviews/user-count/${groundId}`, {
+      const res = await fetch(`${API_URL}/api/v1/reviews/user-count/${groundId}`, {
         credentials: 'include'
       });
       const data = await res.json();
@@ -137,7 +143,7 @@ const BookingPage = () => {
   // Fetch reviews for the ground
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/reviews/${groundId}`);
+      const res = await fetch(`${API_URL}/api/v1/reviews/${groundId}`);
       const data = await res.json();
       if (res.ok && data.data) {
         setReviews(data.data.reviews || []);
@@ -160,7 +166,7 @@ const BookingPage = () => {
 
     try {
       setReviewLoading(true);
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/reviews/add`, {
+      const res = await fetch(`${API_URL}/api/v1/reviews/add`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -186,11 +192,11 @@ const BookingPage = () => {
           await fetchUserReviewCount(); // Update count from backend
           setShowReviewForm(false);
         }
-        setNotification({ type: 'error', text: data.message || 'Failed to submit review' });
+        setNotification({ type: 'error', text: data.message || 'Failed to submit review. Please try again.' });
       }
     } catch (err) {
       console.error('Error submitting review:', err);
-      setNotification({ type: 'error', text: 'Error submitting review. Please try again.' });
+      setNotification({ type: 'error', text: 'Failed to submit review. Please try again.' });
     } finally {
       setReviewLoading(false);
     }
@@ -255,7 +261,7 @@ const BookingPage = () => {
       setBookingLoading(true);
       setBookingMessage(null);
 
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/v1/bookings/book`, {
+      const res = await fetch(`${API_URL}/api/v1/bookings/book`, {
         method: 'POST',
         body: formData,
         credentials: 'include',
@@ -273,11 +279,11 @@ const BookingPage = () => {
         // After successful booking, refetch the booked slots to disable the one just booked
         fetchBookedSlots(selectedDate);
       } else {
-        setBookingMessage({ type: 'error', text: data.message || 'Booking failed.' });
+        setBookingMessage({ type: 'error', text: data.message || 'Failed to create booking. Please try again.' });
       }
     } catch (err) {
       console.error('Booking error:', err);
-      setBookingMessage({ type: 'error', text: 'Network error. Could not connect to server.' });
+      setBookingMessage({ type: 'error', text: 'Unable to connect to the server. Please check your internet connection and try again.' });
     } finally {
       setBookingLoading(false);
     }

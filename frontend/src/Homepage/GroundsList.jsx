@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import GroundCard from './GroundCard';
+import { API_URL } from '../config';
 import './GroundsList.css';
 
 const GroundsList = () => {

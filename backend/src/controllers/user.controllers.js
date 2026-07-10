@@ -18,7 +18,10 @@ let registerUser = asyncHandler(async (req, res) => {
   }
   let existingUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existingUser && existingUser.isVerified) {
-    throw new ApiError(409, "User already exists");
+    if (existingUser.email === email) {
+      throw new ApiError(409, "Email already exists. Please sign in instead.");
+    }
+    throw new ApiError(409, "This username is already taken. Please choose another.");
   }
   if (existingUser) {
     await User.deleteOne({
@@ -40,11 +43,14 @@ let registerUser = asyncHandler(async (req, res) => {
     });
     await sendOTPEmail(email, otp);
   } catch (err) {
-    throw new ApiError(500, "User creation failed");
+    if (err instanceof ApiError) {
+      throw err;
+    }
+    throw new ApiError(500, "We couldn't complete your registration. Please try again.");
   }
   res
     .status(200)
-    .send(new ApiResponse(200, "User registered. OTP sent to email."));
+    .send(new ApiResponse(200, {}, "Account created. OTP sent to your email."));
 });
 
 let verifyOTP = asyncHandler(async (req, res) => {
@@ -54,19 +60,19 @@ let verifyOTP = asyncHandler(async (req, res) => {
   }
   const user = await User.findOne({ email });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "We couldn't find a pending verification for this email. Please sign up again.");
   }
   if (user.otp !== otp) {
-    throw new ApiError(400, "Invalid OTP");
+    throw new ApiError(400, "Invalid OTP. Please check the code and try again.");
   }
   if (user.otpExpires < new Date()) {
-    throw new ApiError(401, "OTP has expired");
+    throw new ApiError(401, "OTP has expired. Please request a new one.");
   }
   user.isVerified = true;
   user.otp = undefined;
   user.otpExpires = undefined;
   await user.save();
-  res.status(200).send(new ApiResponse(200, "User Verified"));
+  res.status(200).send(new ApiResponse(200, {}, "Verification successful."));
 });
 
 let logoutUser = asyncHandler(async (req, res) => {
@@ -97,11 +103,11 @@ const resendOTP = asyncHandler(async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user) {
-    throw new ApiError(404, "User not found");
+    throw new ApiError(404, "No account found with this email. Please sign up first.");
   }
 
   if (user.isVerified) {
-    throw new ApiError(400, "User is already verified");
+    throw new ApiError(400, "This account is already verified. Please sign in.");
   }
 
   const newOTP = generateOTP();
@@ -113,7 +119,7 @@ const resendOTP = asyncHandler(async (req, res) => {
 
   await sendOTPEmail(email, newOTP);
 
-  res.status(200).json(new ApiResponse(200, "New OTP sent to your email"));
+  res.status(200).json(new ApiResponse(200, {}, "OTP sent successfully."));
 });
 
 let loginUser = asyncHandler(async (req, res) => {
@@ -126,13 +132,13 @@ let loginUser = asyncHandler(async (req, res) => {
   try {
     user = await User.findOne({ username });
     if (!user) {
-      throw new ApiError(404, "User not found");
+      throw new ApiError(404, "No account found with this username.");
     }
 
     let passwordCorrect = await user.isPasswordCorrect(password);
 
     if (!passwordCorrect) {
-      throw new ApiError(400, "Wrong password");
+      throw new ApiError(400, "Incorrect password.");
     }
 
     let { accessToken, refreshToken } = await generateAccessAndRefreshToken(
@@ -143,8 +149,6 @@ let loginUser = asyncHandler(async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     };
-    console.log("Access and refresh token generated");
-
     res
       .status(200)
       .cookie("accessToken", accessToken, options)
@@ -153,14 +157,14 @@ let loginUser = asyncHandler(async (req, res) => {
         new ApiResponse(
           200,
           { user, accessToken, refreshToken },
-          "User Loggedin Successfully"
+          "Signed in successfully."
         )
       );
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, "Something went wrong", error);
+    throw new ApiError(500, "We couldn't sign you in. Please try again.");
   }
 });
 
@@ -189,22 +193,22 @@ let changePassword = asyncHandler(async (req, res) => {
     let { currentPassword, newPassword } = req.body;
     let user = await User.findById(req.user._id);
     if (!user) {
-      throw new ApiError(400, "User not found");
+      throw new ApiError(400, "We couldn't find your account.");
     }
     let response = await user.isPasswordCorrect(currentPassword);
     if (!response) {
-      throw new ApiError(410, "Wrong current password");
+      throw new ApiError(410, "Incorrect current password. Please try again.");
     }
     user.password = newPassword;
     await user.save();
     res
       .status(200)
-      .json(new ApiResponse(200, user, "Password changed successfully"));
+      .json(new ApiResponse(200, user, "Password changed successfully."));
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, error?.message || "Something went wrong");
+    throw new ApiError(500, "We couldn't update your password. Please try again.");
   }
 });
 
@@ -224,10 +228,10 @@ let updateAccountDetails = asyncHandler(async (req, res) => {
     });
 
     if (existingUser) {
-      throw new ApiError(
-        410,
-        "Another user with same username or email already exists"
-      );
+      if (existingUser.email === email) {
+        throw new ApiError(410, "Email already exists. Please use a different email.");
+      }
+      throw new ApiError(410, "This username is already taken. Please choose another.");
     }
     let user = await User.findByIdAndUpdate(
       req.user._id,
@@ -241,12 +245,12 @@ let updateAccountDetails = asyncHandler(async (req, res) => {
     );
     res
       .status(200)
-      .json(new ApiResponse(200, user, "Account data updated successfuly"));
+      .json(new ApiResponse(200, user, "Account details updated successfully."));
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, error?.message || "Something went wrong");
+    throw new ApiError(500, "We couldn't update your account details. Please try again.");
   }
 });
 
@@ -254,7 +258,7 @@ let refreshAccessToken = async (req, res) => {
   let refreshToken = req.cookies.refreshToken;
 
   if (!refreshToken) {
-    throw new ApiError(498, "Refresh token not provided");
+    throw new ApiError(498, "Your session has expired. Please sign in again.");
   }
 
   try {
@@ -263,11 +267,11 @@ let refreshAccessToken = async (req, res) => {
     let user = await User.findById(decoded?.id);
 
     if (!user) {
-      throw new ApiError(498, "Invalid refresh token");
+      throw new ApiError(498, "Your session has expired. Please sign in again.");
     }
 
     if (refreshToken !== user?.refreshToken) {
-      throw new ApiError(498, "Wrong refresh token");
+      throw new ApiError(498, "Your session has expired. Please sign in again.");
     }
 
     let { accessToken, refreshToken: newRefreshToken } =
@@ -282,12 +286,11 @@ let refreshAccessToken = async (req, res) => {
     res
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", newRefreshToken, options);
-    console.log("Access and Refresh tokens refreshed");
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(400, "error refreshing access token");
+    throw new ApiError(400, "Your session has expired. Please sign in again.");
   }
 };
 

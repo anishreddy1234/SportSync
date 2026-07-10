@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import "./page.css";
 
 export default function ChangePassword() {
@@ -33,7 +34,7 @@ export default function ChangePassword() {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/change-password`,
+        `${API_URL}/api/v1/users/change-password`,
         {
           method: "POST",
           headers: {
@@ -51,14 +52,14 @@ export default function ChangePassword() {
           navigate("/");
           return;
         }
-        setMessage({ type: "error", text: data.message || "Failed to change password." });
+        setMessage({ type: "error", text: data.message || "Failed to change password. Please try again." });
         return;
       }
 
       setMessage({ type: "success", text: "Password changed successfully!" });
       setTimeout(() => navigate("/homepage"), 1200);
     } catch (error) {
-      setMessage({ type: "error", text: error.message });
+      setMessage({ type: "error", text: "Unable to connect to the server. Please check your internet connection and try again." });
     } finally {
       setLoading(false);
     }

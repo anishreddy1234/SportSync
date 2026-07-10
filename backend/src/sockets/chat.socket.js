@@ -14,15 +14,13 @@ export const initializeChatSocket = (io) => {
         socket.request.cookies?.accessToken; // Add cookie support
 
       if (!token) {
-        console.log("Socket connection rejected: No token provided");
         return next(new Error("Authentication token required"));
       }
 
       // Verify JWT token
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      
+
       if (!decoded || !decoded.id) {
-        console.log("Socket connection rejected: Invalid token structure");
         return next(new Error("Invalid token"));
       }
 
@@ -30,19 +28,16 @@ export const initializeChatSocket = (io) => {
       const user = await User.findById(decoded.id).select("-password -refreshToken");
 
       if (!user) {
-        console.log(`Socket connection rejected: User not found for ID ${decoded.id}`);
         return next(new Error("User not found"));
       }
 
       // Check if user is verified (optional - remove if not needed)
       if (!user.isVerified) {
-        console.log(`Socket connection rejected: User ${user.username} is not verified`);
         return next(new Error("User not verified"));
       }
 
       // Store user in socket data
       socket.data.user = user;
-      console.log(`Socket authentication successful for user: ${user.username}`);
       next();
     } catch (error) {
       console.error("Socket authentication error:", error.message);
@@ -58,7 +53,6 @@ export const initializeChatSocket = (io) => {
 
   io.on("connection", (socket) => {
     const user = socket.data.user;
-    console.log(`User connected: ${user.username} (${socket.id})`);
 
     socket.join("community-chat");
 
@@ -87,8 +81,6 @@ export const initializeChatSocket = (io) => {
 
     // Handle disconnect
     socket.on("disconnect", () => {
-      console.log(`User disconnected: ${user.username} (${socket.id})`);
-      
       socket.broadcast.to("community-chat").emit("user:left", {
         userId: user._id,
         username: user.username,

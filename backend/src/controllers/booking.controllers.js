@@ -14,7 +14,7 @@ const BookGround = asyncHandler(async (req, res) => {
 
   const ground = await Ground.findById(groundId);
   if (!ground) {
-    throw new ApiError(404, "Ground not found");
+    throw new ApiError(404, "This ground no longer exists.");
   }
 
   const existingBooking = await Booking.findOne({
@@ -26,7 +26,7 @@ const BookGround = asyncHandler(async (req, res) => {
   });
 
   if (existingBooking) {
-    throw new ApiError(400, "Time slot already booked or pending confirmation");
+    throw new ApiError(400, "This slot is no longer available.");
   }
 
   if (!req.file) {
@@ -34,7 +34,7 @@ const BookGround = asyncHandler(async (req, res) => {
   }
 
   let image = await uploadOnCloudinary(req.file.path);
-  if (!image) throw new ApiError(500, "Error uploading image");
+  if (!image) throw new ApiError(500, "Failed to upload payment screenshot. Please try again.");
 
   const booking = await Booking.create({
     groundId,
@@ -49,7 +49,7 @@ const BookGround = asyncHandler(async (req, res) => {
   });
   res
     .status(200)
-    .json(new ApiResponse(200, booking, "Booking created successfully"));
+    .json(new ApiResponse(200, booking, "Booking request submitted successfully."));
 });
 
 const bookedGrounds = asyncHandler(async (req, res) => {

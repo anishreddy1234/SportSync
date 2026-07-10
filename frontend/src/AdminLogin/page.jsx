@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import "./page.css";
 
 const AdminLogin = () => {
@@ -30,7 +31,7 @@ const AdminLogin = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/admin/login`,
+        `${API_URL}/api/v1/admin/login`,
         {
           method: "POST",
           headers: {
@@ -53,10 +54,10 @@ const AdminLogin = () => {
         }
         navigate("/adminpage");
       } else {
-        setError(data.message || "Invalid credentials. Please try again.");
+        setError(data.message || "Unable to sign in. Please try again.");
       }
     } catch (err) {
-      setError("Network error. Please check your connection and try again.");
+      setError("Unable to connect to the server. Please check your internet connection and try again.");
       console.error("Admin Login error:", err);
     } finally {
       setLoading(false);

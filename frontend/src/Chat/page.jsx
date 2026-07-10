@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import io from 'socket.io-client';
 import Notification from '../components/Notification';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { API_URL } from '../config';
 import './page.css';
 
 const Chat = () => {
@@ -50,7 +51,7 @@ const Chat = () => {
     const accessToken = localStorage.getItem('accessToken');
 
     // Connect to socket with credentials (cookies will be sent automatically)
-    const newSocket = io(import.meta.env.VITE_BACKEND_URL, {
+    const newSocket = io(API_URL, {
       transports: ['polling', 'websocket'], // Try polling first (more reliable for cookies)
       withCredentials: true, // This sends cookies automatically
       auth: {
@@ -69,10 +70,12 @@ const Chat = () => {
           error.message === 'Invalid token' ||
           error.message === 'Token expired' ||
           error.message === 'User not found') {
-        setNotification({ type: 'error', text: 'Session expired. Please login again.' });
+        setNotification({ type: 'error', text: 'Your session has expired. Please sign in again.' });
         setTimeout(() => navigate('/'), 1500);
+      } else {
+        // For other errors (like network issues), don't redirect - socket will retry
+        setNotification({ type: 'error', text: 'Connection lost. Reconnecting...' });
       }
-      // For other errors (like network issues), don't redirect - socket will retry
     });
 
     setSocket(newSocket);
@@ -87,7 +90,7 @@ const Chat = () => {
     const fetchHistory = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/history?page=1&limit=100`,
+          `${API_URL}/api/v1/chat/history?page=1&limit=100`,
           { credentials: 'include' }
         );
         
@@ -167,7 +170,7 @@ const Chat = () => {
 
       // Send text message via REST API
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/send-text`,
+        `${API_URL}/api/v1/chat/send-text`,
         {
           method: 'POST',
           credentials: 'include',
@@ -180,7 +183,7 @@ const Chat = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to send message');
+        throw new Error(errorData.message || 'Failed to send message. Please try again.');
       }
 
       // Reset input and keep focus
@@ -196,7 +199,7 @@ const Chat = () => {
       
     } catch (error) {
       console.error('Error sending message:', error);
-      setNotification({ type: 'error', text: 'Failed to send message: ' + error.message });
+      setNotification({ type: 'error', text: error.message || 'Failed to send message. Please try again.' });
     }
   };
 
@@ -244,7 +247,7 @@ const Chat = () => {
 
       // Send image directly - this uploads AND creates the message
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/send-image`,
+        `${API_URL}/api/v1/chat/send-image`,
         {
           method: 'POST',
           credentials: 'include',
@@ -254,7 +257,7 @@ const Chat = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Image upload failed');
+        throw new Error(errorData.message || 'File upload failed. Please try again.');
       }
 
       // Image sent successfully - message will appear via socket.on('message:new')
@@ -275,7 +278,7 @@ const Chat = () => {
 
     } catch (error) {
       console.error('Error uploading image:', error);
-      setNotification({ type: 'error', text: 'Failed to upload image: ' + error.message });
+      setNotification({ type: 'error', text: error.message || 'File upload failed. Please try again.' });
     } finally {
       setUploadingMedia(false);
     }
@@ -302,7 +305,7 @@ const Chat = () => {
 
       // Send video directly - this uploads AND creates the message
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/send-video`,
+        `${API_URL}/api/v1/chat/send-video`,
         {
           method: 'POST',
           credentials: 'include',
@@ -312,7 +315,7 @@ const Chat = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Video upload failed');
+        throw new Error(errorData.message || 'File upload failed. Please try again.');
       }
 
       // Video sent successfully - message will appear via socket.on('message:new')
@@ -333,7 +336,7 @@ const Chat = () => {
 
     } catch (error) {
       console.error('Error uploading video:', error);
-      setNotification({ type: 'error', text: 'Failed to upload video: ' + error.message });
+      setNotification({ type: 'error', text: error.message || 'File upload failed. Please try again.' });
     } finally {
       setUploadingMedia(false);
     }
@@ -353,17 +356,17 @@ const Chat = () => {
     setConfirmDialog(null);
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/chat/message/${messageId}`,
+        `${API_URL}/api/v1/chat/message/${messageId}`,
         {
           method: 'DELETE',
           credentials: 'include',
         }
       );
 
-      if (!response.ok) throw new Error('Delete failed');
+      if (!response.ok) throw new Error('Failed to delete message. Please try again.');
     } catch (error) {
       console.error('Error deleting message:', error);
-      setNotification({ type: 'error', text: 'Failed to delete message' });
+      setNotification({ type: 'error', text: 'Failed to delete message. Please try again.' });
     }
   };
 

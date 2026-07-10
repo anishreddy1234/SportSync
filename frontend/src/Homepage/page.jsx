@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import GroundCard from './GroundCard';
 import Notification from '../components/Notification';
+import { API_URL } from '../config';
 import "./Page.css";
 
 const Homepage = () => {
@@ -18,7 +19,7 @@ const Homepage = () => {
   const fetchGrounds = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/grounds`,
+        `${API_URL}/api/v1/grounds`,
         { method: "GET", credentials: "include" }
       );
       if (!response.ok) throw new Error("Failed to fetch grounds");
@@ -26,7 +27,7 @@ const Homepage = () => {
       setGrounds(data.data || []);
     } catch (err) {
       console.error('Error fetching grounds:', err);
-      setNotification({ type: 'error', text: 'Failed to load grounds. Please try again.' });
+      setNotification({ type: 'error', text: 'Unable to load grounds. Please refresh the page.' });
     } finally {
       setLoading(false);
     }
@@ -35,7 +36,7 @@ const Homepage = () => {
   const handleLogout = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/v1/users/logout`,
+        `${API_URL}/api/v1/users/logout`,
         { method: "POST", credentials: "include" }
       );
       
