@@ -129,6 +129,7 @@ let loginAdmin = asyncHandler(async (req, res) => {
     let options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
     res
       .status(200)
@@ -194,6 +195,7 @@ let refreshAccessToken = async (req, res) => {
     let options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
 
     req.user = admin;

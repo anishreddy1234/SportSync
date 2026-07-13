@@ -86,6 +86,7 @@ let logoutUser = asyncHandler(async (req, res) => {
   let options = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
   res
     .status(200)
@@ -148,6 +149,7 @@ let loginUser = asyncHandler(async (req, res) => {
     let options = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     };
     res
       .status(200)
