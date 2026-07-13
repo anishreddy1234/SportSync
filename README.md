@@ -23,7 +23,7 @@
 ---
 ## 🚀 Live Demo
 
-**Frontend:** https://your-vercel-app.vercel.app
+**Frontend:** https://sport-sync-azure.vercel.app/
 
 > **Note:** The backend is hosted on Render's free tier. If it has been idle, the first request may take 30–60 seconds while the server wakes up.
 ## About
