@@ -21,7 +21,11 @@
 </div>
 
 ---
+## 🚀 Live Demo
 
+**Frontend:** https://your-vercel-app.vercel.app
+
+> **Note:** The backend is hosted on Render's free tier. If it has been idle, the first request may take 30–60 seconds while the server wakes up.
 ## About
 
 SportSync is a MERN-stack web application that lets users discover local sports venues, filter them by city, and submit time-slot booking requests with payment proof for admin approval. Venue owners manage incoming requests from their own admin dashboard, and registered users can chat with each other in a shared community channel in real time.
@@ -139,7 +143,20 @@ SportSync/
 │
 └── README.md
 ```
+## Demo Credentials
+> If the backend has been idle, please wait up to one minute for Render to wake up before trying again.
+### User
 
+Create a new account using any valid email address.
+An OTP verification email will be sent before activation.
+
+### Admin
+
+Username: `rohan_verma`
+
+Password: `Demo@1234`
+
+The seed script also creates additional demo admin accounts.
 ## Installation
 
 ### Prerequisites
