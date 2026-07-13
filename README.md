@@ -36,15 +36,15 @@ The project was built to practice end-to-end product development: authentication
 
 | Login | Guest Home |
 |---|---|
-| `<screenshot placeholder — login page>` | `<screenshot placeholder — guest landing page>` |
+| ![](assets/screenshots/login.png) | ![](assets/screenshots/guest-home.png) |
 
 | Venue Booking | Admin Dashboard |
 |---|---|
-| `<screenshot placeholder — booking flow>` | `<screenshot placeholder — admin dashboard>` |
+| ![](assets/screenshots/booking.png)| ![](assets/screenshots/admin-dashboard.png) |
 
 | Community Chat |
 |---|
-| `<screenshot placeholder — chat page>` |
+| ![](assets/screenshots/chat.png) |
 
 ## Features
 
